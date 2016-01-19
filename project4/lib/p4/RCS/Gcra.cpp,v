@@ -1,0 +1,2477 @@
+head	1.10;
+access;
+symbols;
+locks
+	horwitz:1.10; strict;
+comment	@// @;
+
+
+1.10
+date	2012.10.31.21.01.49;	author horwitz;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	2012.10.31.20.18.13;	author horwitz;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	2012.10.31.20.17.50;	author horwitz;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	2010.11.04.21.03.16;	author horwitz;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	2010.11.04.21.02.04;	author horwitz;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2010.11.04.20.57.47;	author horwitz;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	2010.11.04.20.48.51;	author horwitz;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	2010.11.04.20.47.09;	author horwitz;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2010.11.04.20.43.53;	author horwitz;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2010.11.04.20.41.21;	author horwitz;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.10
+log
+@Compiles and allows make main.reg.
+Does NOT include the TwoAddrInstruction pass!
+@
+text
+@//===-- Gcra.cpp - Graph-coloring Register Allocator --------------------===//
+//
+//                     The LLVM Compiler Infrastructure
+//
+// This file is distributed under the University of Illinois Open Source
+// License. See LICENSE.TXT for details.
+//
+//===--------------------------------------------------------------------===//
+//
+// This file does Graph-coloring Register Allocation, for CS 701 Project 4.
+//
+//===--------------------------------------------------------------------===//
+
+#define DEBUG_TYPE "gcra"
+#include <iostream>
+
+#include "llvm/CodeGen/Passes.h"
+#include "llvm/CodeGen/MachineFunctionPass.h"
+#include "llvm/CodeGen/RegAllocRegistry.h"
+
+using namespace llvm;
+
+namespace {
+  class Gcra : public MachineFunctionPass {
+  private:
+    
+  public:
+    static char ID; // Pass identification, replacement for typeid
+    
+    //**********************************************************************
+    // constructor
+    //**********************************************************************
+    Gcra() : MachineFunctionPass(ID) {
+    }
+    
+    //**********************************************************************
+    // runOnMachineFunction
+    //
+    //**********************************************************************
+    bool runOnMachineFunction(MachineFunction &Fn) {
+      
+      std::cerr << "START\n";
+      exit(0);
+      return true;
+    }
+    
+    virtual void getAnalysisUsage(AnalysisUsage &AU) const {
+      // Eliminate PHI nodes before we get the CFG.
+      // This works by inserting copies into predecessor blocks.
+      // So the code is no longer in SSA form.
+      AU.addRequiredID(PHIEliminationID); 
+      //      AU.addRequiredID(TwoAddressInstructionPassID);
+      MachineFunctionPass::getAnalysisUsage(AU);
+    }
+    
+  private:
+  };
+  
+  // The library-inclusion mechanism requires the following:
+  char Gcra::ID = 0;
+  
+  FunctionPass *createGcra() { return new Gcra(); }
+  
+  static RegisterRegAlloc register_gcra("gc",
+					"graph-coloring register allocator",
+					createGcra);
+}
+@
+
+
+1.9
+log
+@create back-uo version
+@
+text
+@a14 4
+#include <map>
+#include "RDfact.h"
+#include <stack>
+#include <queue>
+d17 4
+a22 5
+typedef map<const MachineBasicBlock *, set<unsigned>*> BBtoRegMap;
+typedef map<const MachineInstr *, set<unsigned>*> InstrToRegMap;
+typedef map<const MachineBasicBlock *, set<RDfact *>*> BBtoRDfactMap;
+typedef map<const MachineInstr *, set<RDfact *>*> InstrToRDfactMap;
+
+a25 26
+    const TargetRegisterInfo *TRI;
+    
+    static const bool DEBUG = true;
+    static const bool DEBUG_LIVE = false;
+    static const bool DEBUG_RD = true;
+    static const bool PRINT_INST = false;
+    
+    int numRegClasses;
+    
+    set<RDfact *> RDfactSet;
+    
+    map<MachineInstr *, unsigned> InstrToNumMap;
+    
+    BBtoRegMap liveBeforeMap;
+    BBtoRegMap liveAfterMap;
+    BBtoRegMap liveVarsGenMap;
+    BBtoRegMap liveVarsKillMap;
+    InstrToRegMap insLiveBeforeMap;
+    InstrToRegMap insLiveAfterMap;
+    
+    BBtoRDfactMap RDbeforeMap;
+    BBtoRDfactMap RDafterMap;
+    BBtoRDfactMap RDgenMap;
+    BBtoRDfactMap RDkillMap;
+    InstrToRDfactMap insRDbeforeMap;
+    InstrToRDfactMap insRDafterMap;
+a33 1
+      numRegClasses = 0;
+d42 2
+a43 62
+      // get pointer to regster info, which doesn't change over this fn
+      TRI = Fn.getTarget().getRegisterInfo();
+      
+      if (DEBUG) {
+	std::cerr << "START FUNCTION " << Fn.getFunction()->getName().str() << "\n";
+      }
+
+      // INITIALIZE FOR EACH FN
+      RDfactSet.clear();
+      RDbeforeMap.clear();
+      RDafterMap.clear();
+      InstrToNumMap.clear();
+      liveBeforeMap.clear();
+      liveAfterMap.clear();
+      liveVarsGenMap.clear();
+      liveVarsKillMap.clear();
+      insLiveBeforeMap.clear();
+      insLiveAfterMap.clear();
+      
+      RDbeforeMap.clear();
+      RDafterMap.clear();
+      RDgenMap.clear();
+      RDkillMap.clear();
+      insRDbeforeMap.clear();
+      insRDafterMap.clear();
+      
+      
+      // STEP 1: get sets of regs, set of defs, set of RDfacts,
+      //         instruction-to-number map
+      doInit(Fn);
+
+      // if debugging, print all instructions to stdout
+      if (PRINT_INST) {
+	std::cerr << "START INITIAL INSTRUCTIONS FOR " << Fn.getFunction()->getName().str()
+	     << "\n";
+	printInstructions(Fn);
+      }
+      
+      // STEP 2: live analysis for all registers (fill in globals
+      //         liveBeforeMap and liveAfterMap for blocks, and
+      //         globals insLiveBeforeMap and insLiveAfterMapfor
+      //         instructions)
+      if (DEBUG) {
+	std::cerr << "START LIVE ANALYSIS\n";
+      }
+      doLiveAnalysis(Fn);
+      if (DEBUG_LIVE) {
+	printLiveResults(Fn);
+      }
+      
+      // STEP 3: reaching defs analysis (fill in globals RDbeforeMap and
+      //         RDafterMap for blocks, and globals insRDbeforeMap and
+      //         insRDafterMap for instructions)
+      if (DEBUG) {
+	std::cerr << "START REACHING DEFS ANALYSIS\n";
+      }
+      doReachingDefsAnalysis(Fn);
+      if (DEBUG_RD) {
+	printRDResults(Fn);
+      }
+      
+      exit(0); // prevent coredump until reg alloc is implemented
+d52 1
+a52 1
+      AU.addRequiredID(TwoAddressInstructionPassID);
+a56 846
+    //**********************************************************************
+    // doInit
+    //
+    // fill in
+    //  RDfactSet:     set of all reaching-def facts in this function
+    //  InstrToNumMap: map from instruction to unique # (for debugging)
+    //**********************************************************************
+    void doInit(MachineFunction &Fn) {
+      // iterate over all basic blocks, all instructions in a block,
+      // all operands in an instruction
+      int insNum = 1;
+      for (MachineFunction::iterator MFIt = Fn.begin(), MFendIt = Fn.end();
+	   MFIt != MFendIt; MFIt++) {
+	for (MachineBasicBlock::iterator MBBIt = MFIt->begin(),
+	       MBBendIt = MFIt->end(); MBBIt != MBBendIt; MBBIt++) {
+	  //*MBBIt is a MachineInstr
+	  InstrToNumMap[MBBIt] = insNum;
+	  insNum++;
+	  int numOp = MBBIt->getNumOperands();
+	  for (int i = 0; i < numOp; i++) {
+	    MachineOperand MOp = MBBIt->getOperand(i);  
+	    if (MOp.isReg() && MOp.getReg() && MOp.isDef()) {
+	      unsigned reg = MOp.getReg();
+	      // Here if this operand is
+	      //  (a) a register
+	      //  (b) not special reg 0
+	      //  (c) a def
+	      RDfactSet.insert(new RDfact(reg, MBBIt));
+	      // also add new reaching-defs facts for all aliases
+	      if (TargetRegisterInfo::isPhysicalRegister(reg)) {
+		const uint16_t *aliasSet = TRI->getAliasSet(reg);
+		while (aliasSet != NULL && *aliasSet != 0) {
+		  RDfactSet.insert(new RDfact(*aliasSet, MBBIt));
+		  aliasSet++;
+		}
+	      } // end a preg, so deal with aliases
+	    } // end a def of a reg
+	  } // end for each operand
+	} // end iterate over all instructions in 1 basic block
+      } // end iterate over all basic blocks in this fn
+    } // end doInit
+    
+    
+    //**********************************************************************
+    // doLiveAnalysis
+    //**********************************************************************
+    void doLiveAnalysis(MachineFunction &Fn) {
+      // initialize live maps to empty
+      liveBeforeMap.clear();
+      liveAfterMap.clear();
+      liveVarsGenMap.clear();
+      liveVarsKillMap.clear();
+      insLiveBeforeMap.clear();
+      insLiveAfterMap.clear();
+      
+      analyzeBasicBlocksLiveVars(Fn);
+      analyzeInstructionsLiveVars(Fn);
+    }
+    
+    //**********************************************************************
+    // doReachingDefsAnalysis
+    //**********************************************************************
+    void doReachingDefsAnalysis(MachineFunction &Fn) {
+      analyzeBasicBlocksRDefs(Fn);
+      analyzeInstructionsRDefs(Fn);
+    }
+    
+    //**********************************************************************
+    // analyzeBasicBlocksLiveVars
+    //
+    // iterate over all basic blocks bb
+    //    bb.gen = all upwards-exposed uses in bb
+    //    bb.kill = all defs in bb
+    //    put bb on the worklist
+    //**********************************************************************
+    void analyzeBasicBlocksLiveVars(MachineFunction &Fn) {
+      
+      // initialize all before/after/gen/kill sets and
+      // put all basic blocks on the worklist
+      set<MachineBasicBlock *> worklist;
+      for (MachineFunction::iterator MFIt = Fn.begin(), MFendIt = Fn.end();
+	   MFIt != MFendIt; MFIt++) {
+	liveBeforeMap[MFIt] = new set<unsigned>();
+	liveAfterMap[MFIt] = new set<unsigned>();
+	liveVarsGenMap[MFIt] = getUpwardsExposedUses(MFIt);
+	liveVarsKillMap[MFIt] = getAllDefs(MFIt);
+	worklist.insert(MFIt);
+      }
+      
+      // while the worklist is not empty {
+      //   remove one basic block bb
+      //   compute new bb.liveAfter = union of liveBefore's of all successors
+      //   replace old liveAfter with new one
+      //   compute new bb.liveBefore = (bb.liveAfter - bb.kill) union bb.gen
+      //   if bb.liveBefore changed {
+      //      replace old liveBefore with new one
+      //      add all of bb's predecessors to the worklist
+      //   }
+      // }
+      while (! worklist.empty()) {
+	// remove one basic block and compute its new liveAfter set
+	set<MachineBasicBlock *>::iterator oneBB = worklist.begin();
+	MachineBasicBlock *bb = *oneBB;
+	worklist.erase(bb);
+	
+	set<unsigned> *newLiveAfter = computeLiveAfter(bb);
+	
+	// update the liveAfter map
+	liveAfterMap.erase(bb);
+	liveAfterMap[bb] = newLiveAfter;
+	// compute its new liveBefore, see if it has changed (it can only
+	// get bigger)
+	set<unsigned> *newLiveBefore = computeLiveBefore(bb);
+	set<unsigned> *oldLiveBefore = liveBeforeMap[bb];
+	if (newLiveBefore->size() > oldLiveBefore->size()) {
+	  // update the liveBefore map and put all preds of bb on worklist
+	  liveBeforeMap.erase(bb);
+	  liveBeforeMap[bb] = newLiveBefore;
+	  for (MachineBasicBlock::pred_iterator PI = bb->pred_begin(),
+		 E = bb->pred_end();
+	       PI != E; PI++) {
+	    worklist.insert(*PI);
+	  }
+	}
+      }
+    }
+    
+    //**********************************************************************
+    // analyzeBasicBlocksRDefs
+    //**********************************************************************
+    void analyzeBasicBlocksRDefs(MachineFunction &Fn) {
+      // iterate over all basic blocks bb computing
+      //    bb.gen = for each reg v defined in bb at inst: the RDfact
+      //             (v, inst)
+      //    bb.kill = all dataflow facts with reg v
+      // also put bb on the worklist
+      
+      set<MachineBasicBlock *> worklist;
+      for (MachineFunction::iterator MFIt = Fn.begin(), MFendIt = Fn.end();
+	   MFIt != MFendIt; MFIt++) {
+	RDbeforeMap[MFIt] = new set<RDfact *>();
+	RDafterMap[MFIt] = new set<RDfact *>();
+	RDgenMap[MFIt] = getRDgen(MFIt);
+	RDkillMap[MFIt] = getRDkill(MFIt);
+	worklist.insert(MFIt);
+      }
+      
+      // while the worklist is not empty {
+      //   remove one basic block bb
+      //   compute new bb.RDbefore = union of RDafter's of all preds
+      //   replace old RDbefore with new one
+      //   compute new bb.RDafter = (bb.RDbefore - bb.RDkill) union
+      //                              bb.RDgen
+      //   if bb.RDafter changed {
+      //      replace old RDbefore with new one
+      //      add all of bb's succs to the worklist
+      //   }
+      // }
+      while (! worklist.empty()) {
+	// remove one basic block and compute its new RDbefore set
+	set<MachineBasicBlock *>::iterator oneBB = worklist.begin();
+	MachineBasicBlock *bb = *oneBB;
+	worklist.erase(bb);
+	
+	set<RDfact *> *newRDbefore = computeRDbefore(bb);
+	
+	// update the RDbefore map
+	RDbeforeMap.erase(bb);
+	RDbeforeMap[bb] = newRDbefore;
+	// compute its new RDafter, see if it has changed (it can only
+	// get bigger)
+	set<RDfact *> *newRDafter = computeRDafter(bb);
+	set<RDfact *> *oldRDafter = RDafterMap[bb];
+	if (newRDafter->size() > oldRDafter->size()) {
+	  // update the RDafter map and put all succs of bb on worklist
+	  RDafterMap.erase(bb);
+	  RDafterMap[bb] = newRDafter;
+	  for (MachineBasicBlock::succ_iterator PI = bb->succ_begin(),
+		 E = bb->succ_end();
+	       PI != E; PI++) {
+	    worklist.insert(*PI);
+	  }
+	}
+      }
+    }
+    
+    // **********************************************************************
+    // computeLiveBefore
+    //
+    // given: bb          ptr to a MachineBasicBlock 
+    //
+    // do:    compute and return bb's current LiveBefore set:
+    //          (bb.liveAfter - bb.kill) union bb.gen
+    // **********************************************************************
+    set<unsigned> *computeLiveBefore(MachineBasicBlock *bb) {
+      return regSetUnion(regSetSubtract(liveAfterMap[bb],
+					liveVarsKillMap[bb]
+					),
+			 liveVarsGenMap[bb]
+			 );
+    }
+    
+    
+    // **********************************************************************
+    // computeLiveAfter
+    //
+    // given: bb  ptr to a MachineBasicBlock 
+    //
+    // do:    compute and return bb's current LiveAfter set: the union
+    //        of the LiveBefore sets of all of bb's CFG successors
+    // **********************************************************************
+    set<unsigned> *computeLiveAfter(MachineBasicBlock *bb) {
+      set<unsigned> *result = new set<unsigned>();
+      for (MachineBasicBlock::succ_iterator SI = bb->succ_begin();
+	   SI != bb->succ_end(); SI++) {
+	MachineBasicBlock *oneSucc = *SI;
+	result = regSetUnion(result, liveBeforeMap[oneSucc]);
+      }
+      
+      return result;
+    }
+    
+    
+    // **********************************************************************
+    // computeRDbefore
+    //
+    // given: bb  ptr to a MachineBasicBlock 
+    //
+    // do:    compute and return bb's current RDbefore set: the union
+    //        of the RDafter sets of all of bb's CFG preds
+    // **********************************************************************
+    set<RDfact *> *computeRDbefore(MachineBasicBlock *bb) {
+      set<RDfact *> *result = new set<RDfact *>();
+      for (MachineBasicBlock::pred_iterator SI = bb->pred_begin();
+	   SI != bb->pred_end(); SI++) {
+	MachineBasicBlock *onePred = *SI;
+	result = RDsetUnion(result, RDafterMap[onePred]);
+      }
+      
+      return result;
+    }
+    
+    // **********************************************************************
+    // computeRDafter
+    //
+    // given: bb          ptr to a MachineBasicBlock 
+    //
+    // do:    compute and return bb's current RDafter set:
+    //          (bb.RDbefore - bb.kill) union bb.gen
+    // **********************************************************************
+    set<RDfact *> *computeRDafter(MachineBasicBlock *bb) {
+      return RDsetUnion(RDsetSubtract(RDbeforeMap[bb],
+				      RDkillMap[bb]
+				      ),
+			RDgenMap[bb]
+			);
+    }
+    
+    
+    
+    // **********************************************************************
+    // regSetUnion
+    //
+    // given: S1, S2          ptrs to sets of regs
+    // do:    return a ptr to (*S1 union *S2)
+    // **********************************************************************
+    set<unsigned> *regSetUnion(set<unsigned> *S1, set<unsigned> *S2) {
+      set<unsigned> *result = new set<unsigned>();
+      // iterate over S1
+      for (set<unsigned>::iterator oneRegPtr = S1->begin();
+	   oneRegPtr != S1->end();
+	   oneRegPtr++) {
+	result->insert(*oneRegPtr);
+      }
+      
+      // iterate over S2
+      for (set<unsigned>::iterator oneRegPtr = S2->begin();
+	   oneRegPtr != S2->end();
+	   oneRegPtr++) {
+	result->insert(*oneRegPtr);
+      }
+      
+      return result;
+    }
+    
+    // **********************************************************************
+    // RDsetUnion
+    //
+    // given: S1, S2          ptrs to sets of ptrs to RDfacts
+    // do:    return a ptr to (*S1 union *S2)
+    // **********************************************************************
+    set<RDfact *> *RDsetUnion(set<RDfact *> *S1, set<RDfact *> *S2) {
+      set<RDfact *> *result = new set<RDfact *>();
+      // iterate over S1
+      for (set<RDfact *>::iterator oneRDfact = S1->begin();
+	   oneRDfact != S1->end();
+	   oneRDfact++) {
+	result->insert(*oneRDfact);
+      }
+      
+      // iterate over S2
+      for (set<RDfact *>::iterator oneRDfact = S2->begin();
+	   oneRDfact != S2->end();
+	   oneRDfact++) {
+	result->insert(*oneRDfact);
+      }
+      
+      return result;
+    }
+    
+    
+    // **********************************************************************
+    // regSetSubtract
+    //
+    // given: S1, S2          ptrs to sets of regs
+    // do:    return a ptr to (*S1 - *S2)
+    //
+    // **********************************************************************
+    set<unsigned> *regSetSubtract(set<unsigned> *S1, set<unsigned> *S2) {
+      set<unsigned> *result = new set<unsigned>();
+      // iterate over S1; for each element, if it is NOT in S2, then
+      // add it to the result
+      for (set<unsigned>::iterator S1RegPtr = S1->begin();
+	   S1RegPtr != S1->end();
+	   S1RegPtr++) {
+	if (S2->count(*S1RegPtr) == 0) {
+	  result->insert(*S1RegPtr);
+	}
+      }
+      
+      return result;
+    }
+    
+    // **********************************************************************
+    // RDsetSubtract
+    //
+    // given: S1, S2          ptrs to sets of RDfact ptrs
+    // do:    return a ptr to (*S1 - *S2)
+    //
+    // **********************************************************************
+    set<RDfact *> *RDsetSubtract(set<RDfact *> *S1, set<RDfact *> *S2) {
+      set<RDfact *> *result = new set<RDfact *>();
+      // iterate over S1; for each element, if it is NOT in S2, then
+      // add it to the result
+      for (set<RDfact *>::iterator S1RegPtr = S1->begin();
+	   S1RegPtr != S1->end();
+	   S1RegPtr++) {
+	if (S2->count(*S1RegPtr) == 0) {
+	  result->insert(*S1RegPtr);
+	}
+      }
+      
+      return result;
+    }
+
+    //**********************************************************************
+    // analyzeInstructionsLiveVars
+    //
+    // do live-var analysis at the instruction level:
+    //   iterate over all basic blocks
+    //   for each, iterate backwards over instructions, propagating
+    //             live-var info:
+    //     for each instruction inst
+    //             live-before = (live-after - kill) union gen
+    //     where kill is the defined reg of inst (if any) and
+    //           gen is all reg-use operands of inst
+    //**********************************************************************
+    void analyzeInstructionsLiveVars(MachineFunction &Fn) {
+      for (MachineFunction::iterator bb = Fn.begin(), bbe = Fn.end(); 
+	   bb != bbe; bb++) {
+	// no reverse iterator and recursion doesn't work,
+	// so create vector of instructions for backward traversal
+	vector<MachineInstr *> instVector;
+	for (MachineBasicBlock::iterator inIt = bb->begin();
+	     inIt != bb->end();
+	     inIt++) {
+	  instVector.push_back(inIt);
+	}
+	
+	liveForInstr(instVector, liveAfterMap[bb]);
+      }
+    }
+    
+    //**********************************************************************
+    // analyzeInstructionsRDefs
+    //
+    // given reaching-defs before and after facts for basic block,
+    // compute before/after facts for each instruction in each basic block
+    //
+    // for one instruction: RDafter = (RDbefore - kill) union gen
+    // where kill is all dataflow facts with the regs that are defined
+    // by this instruction (if any), and gen is the set of facts (reg, inst)
+    // for all regs defined by this instruction (if any)
+    //**********************************************************************
+    void analyzeInstructionsRDefs(MachineFunction &Fn) {
+      // iterate over all basic blocks in this function
+      for (MachineFunction::iterator bb = Fn.begin(), bbe = Fn.end(); 
+	   bb != bbe; bb++) {
+	set<RDfact *> *RDbefore = RDbeforeMap[bb];
+	// iterate over all instructions in this basic block
+	for (MachineBasicBlock::iterator inIt = bb->begin();
+	     inIt != bb->end();
+	     inIt++) {
+	  insRDbeforeMap[inIt] = RDbefore;
+	  set<RDfact *> *kill = new set<RDfact *>();
+	  set<RDfact *> *gen = new set<RDfact *>();
+	  set<unsigned> *regDefs = getOneInstrRegDefs(inIt);
+	  // if at least one reg was defined
+	  // then compute gen and kill sets for this instruction
+	  if (regDefs->size() > 0) {
+	    for (set<unsigned>::iterator regIt = regDefs->begin();
+		 regIt != regDefs->end(); regIt++) {
+	      unsigned oneDef = *regIt;
+	      gen->insert(new RDfact(oneDef, inIt));
+	      // iterate over all RDfacts, see which are killed
+	      for (set<RDfact *>::iterator IT = RDfactSet.begin();
+		   IT != RDfactSet.end(); IT++) {
+		RDfact *oneRDfact = *IT;
+		unsigned oneReg = oneRDfact->getReg();
+		if (oneReg == oneDef) {
+		  kill->insert(oneRDfact);
+		}
+	      } // end iterate over all RDfacts to compute kill
+	    } // end iterate over set of regs defined by one instruction
+
+	    // we've now defined the gen and kill sets so we can
+	    // compute the "after" fact for this instruction
+	    set<RDfact *> *RDafter = RDsetUnion(RDsetSubtract(RDbefore, kill),
+						gen);
+	    insRDafterMap[inIt] = RDafter;
+	    RDbefore = RDafter;
+	  } else {
+	    // this instruction doesn't define any reg
+	    insRDafterMap[inIt] = RDbefore;
+	  }
+	} // end iterate over all instructions in 1 basic block
+      } // end iterate over all basic blocks
+    }
+    
+    // **********************************************************************
+    // getUpwardsExposedUses
+    //
+    // given: bb      ptr to a basic block
+    // do:    return a ptr to the set of regs that are used before
+    //        being defined in bb; include aliases!
+    // **********************************************************************
+    set<unsigned> *getUpwardsExposedUses(MachineBasicBlock *bb) {
+      set<unsigned> *result = new set<unsigned>();
+      set<unsigned> *defs = new set<unsigned>();
+      for (MachineBasicBlock::iterator instruct = bb->begin(),
+	     instructEnd = bb->end(); instruct != instructEnd; instruct++) {
+	set<unsigned> *uses = getOneInstrRegUses(instruct);
+	set<unsigned> *upUses = regSetSubtract(uses, defs);
+	result = regSetUnion(result, upUses);
+	set<unsigned> *defSet = getOneInstrRegDefs(instruct);
+	for (set<unsigned>::iterator IT = defSet->begin();
+	     IT != defSet->end(); IT++) {
+	  unsigned oneDef = *IT;
+	  defs->insert(oneDef);
+	}
+      } // end iterate over all instrutions in this basic block
+      
+      return result;
+    }
+    
+    
+    // **********************************************************************
+    // getRDgen
+    //
+    // given: bb      ptr to a basic block
+    // do:    return a set of reaching-def facts: the ones that occur in bb
+    // **********************************************************************
+    set<RDfact *> *getRDgen(MachineBasicBlock *bb) {
+      set<RDfact *> *result = new set<RDfact *>();
+      for (MachineBasicBlock::iterator instruct = bb->begin(),
+	     instructEnd = bb->end(); instruct != instructEnd; instruct++) {
+	set<unsigned> *defSet = getOneInstrRegDefs(instruct);
+	for (set<unsigned>::iterator IT = defSet->begin();
+	     IT != defSet->end(); IT++) {
+	  unsigned oneDef = *IT;
+	  result->insert(new RDfact(oneDef, instruct));
+	}
+      } // end iterate over all instructions in this basic block
+      
+      return result;
+    }
+    
+    // **********************************************************************
+    // getRDkill
+    //
+    // given: bb      ptr to a basic block
+    // do:    return a set of reaching-def facts: the ones whose reg
+    //        component is defined in bb
+    // **********************************************************************
+    set<RDfact *> *getRDkill(MachineBasicBlock *bb) {
+      set<RDfact *> *result = new set<RDfact *>();
+      for (MachineBasicBlock::iterator instruct = bb->begin(),
+	     instructEnd = bb->end(); instruct != instructEnd; instruct++) {
+	set<unsigned> *defSet = getOneInstrRegDefs(instruct);
+	for (set<unsigned>::iterator IT = defSet->begin();
+	     IT != defSet->end(); IT++) {
+	  unsigned oneDef = *IT;
+	  for (set<RDfact *>::iterator IT = RDfactSet.begin();
+	       IT != RDfactSet.end(); IT++) {
+	    RDfact *oneRDfact = *IT;
+	    unsigned oneReg = oneRDfact->getReg();
+	    if (oneReg == oneDef) {
+	      result->insert(oneRDfact);
+	    }
+	  } // end iterate over all RDfacts in the whole fn
+	} // end iterate over all defs in this instruction
+      } // end iterate over all instructions in this basic block
+      
+      return result;
+    }
+    
+    //**********************************************************************
+    // getOneInstrRegUses
+    //
+    // return the set of registers (virtual or physical) used by the
+    // given instruction, including aliases of any physical registers
+    //**********************************************************************
+    set<unsigned> *getOneInstrRegUses(MachineInstr *instruct) {
+      set<unsigned> *result = new set<unsigned>();
+      unsigned numOperands = instruct->getNumOperands();
+      for (unsigned n=0; n<numOperands; n++) {
+	MachineOperand MOp = instruct->getOperand(n);
+	if (MOp.isReg() && MOp.getReg() && MOp.isUse()) {
+	  unsigned reg = MOp.getReg();
+	  if (TargetRegisterInfo::isPhysicalRegister(reg)) {
+	    addAliases(result, reg);
+	  }
+	  result->insert(reg);
+	}
+      } // end for each operand of current instruction
+      return result;
+    }
+    
+    //**********************************************************************
+    // getOneInstrRegDefs
+    //
+    // return a ptr to a set of the registers defined by this instruction
+    // including aliases
+    //**********************************************************************
+    set<unsigned> *getOneInstrRegDefs(MachineInstr *instruct) {
+      set<unsigned> *result = new set<unsigned>();
+      unsigned numOperands = instruct->getNumOperands();
+      for (unsigned n=0; n<numOperands; n++) {
+	MachineOperand MOp = instruct->getOperand(n);
+	if (MOp.isReg() && MOp.getReg() && MOp.isDef()) {
+	  unsigned reg = MOp.getReg();
+	  addAliases(result, reg);
+	  result->insert(reg);
+	}
+      } // end for each operand of current instruction
+      return result;
+    }
+    
+    // **********************************************************************
+    // getAllDefs
+    //
+    // given: bb      ptr to a basic block
+    // do:    return the set of regs that are defined in bb
+    // **********************************************************************
+    set<unsigned> *getAllDefs(MachineBasicBlock *bb) {
+      set<unsigned> *result = new set<unsigned>();
+      
+      // iterate over all instructions in bb
+      //   for each operand that is a non-zero reg:
+      //     if it is a def then add it to the result set
+      // return result
+      // 
+      for (MachineBasicBlock::iterator instruct = bb->begin(),
+	     instructEnd = bb->end(); instruct != instructEnd; instruct++) {
+	unsigned numOperands = instruct->getNumOperands();
+	for (unsigned n=0; n<numOperands; n++) {
+	  MachineOperand MOp = instruct->getOperand(n);
+	  if (MOp.isReg() && MOp.getReg() && MOp.isDef()) {
+	    result->insert(MOp.getReg());
+	  }
+	} // end for each operand of current instruction
+      } // end iterate over all instrutions in this basic block
+      return result;
+    }
+    
+    // **********************************************************************
+    // liveForInstr
+    //
+    // given: instVector vector of ptrs to Instructions for one basic block
+    //        liveAfter  live after set for the *last* instruction in the block
+    //
+    // do:    compute and set liveAfter and liveBefore for each instruction
+    //        liveAfter = liveBefore of next instruction
+    //        liveBefore = (liveAfter - kill) union gen
+    // **********************************************************************
+    void liveForInstr(vector<MachineInstr *>instVector,
+		      set<unsigned> *liveAfter) {
+      while (instVector.size() > 0) {
+	MachineInstr *oneInstr = instVector.back();
+	instVector.pop_back();
+	insLiveAfterMap[oneInstr] = liveAfter;
+	
+	// create liveBefore for this instruction
+	// (which is also liveAfter for the previous one in the block)
+	//   remove the reg defined here (if any) from the set
+	//   then add all used reg operands
+	
+	set<unsigned> *liveBefore;
+	set<unsigned> *gen = getOneInstrRegUses(oneInstr);
+	set<unsigned> *kill = getOneInstrRegDefs(oneInstr);
+	if (kill->size() != 0) {
+	  liveBefore = regSetUnion(regSetSubtract(liveAfter, kill), gen);
+	} else {
+	  liveBefore = regSetUnion(liveAfter, gen);
+	}
+	
+	// add this instruction's liveBefore set to the map
+	// and prepare for the next iteration of the loop
+	insLiveBeforeMap[oneInstr] = liveBefore;
+	liveAfter = liveBefore;
+      } // end while
+    }
+    
+    //**********************************************************************
+    // addAliases
+    //
+    // given: ptr to set of registers
+    //        one reg
+    //
+    // do: add all aliases of reg to set (only a preg has aliases)
+    //**********************************************************************
+    void addAliases(set<unsigned> *S, unsigned reg) {
+      if (TargetRegisterInfo::isPhysicalRegister(reg)) {
+	const uint16_t *aliasSet = TRI->getAliasSet(reg);
+	while (aliasSet != NULL && *aliasSet != 0) {
+	  S->insert(*aliasSet);
+	  aliasSet++;
+	}
+      }      
+    }
+    
+    // **********************************************************************
+    // printInstructions
+    // **********************************************************************
+    void printInstructions(MachineFunction &F) {
+      // iterate over all basic blocks
+      for (MachineFunction::iterator bb = F.begin(); bb != F.end(); bb++) {
+	// iterate over instructions, printing each
+	std::cerr << "Basic Block " << bb->getNumber() << "\n";
+	for (MachineBasicBlock::iterator inIt = bb->begin(), ine = bb->end();
+	     inIt != ine; inIt++) {
+	  MachineInstr *oneI = inIt;
+	  std::cerr << "%" << InstrToNumMap[oneI] << "( " << oneI << ")\n";
+	  //	  std::cerr << *oneI << "\n";
+	}
+      }
+    }
+    
+    
+    // **********************************************************************
+    // printLiveResults
+    //
+    // given: MachineFunction F
+    //
+    // do:    for each basic block in F {
+    //           print fn name, bb number, liveBefore and After sets
+    //           for each instruction, print instruction num, liveBefore and
+    //               liveAfter
+    //        }
+    // 
+    // **********************************************************************
+    void printLiveResults(MachineFunction &F) {
+      std::cerr << "\nLIVE VARS\n";
+      
+      // iterate over all basic blocks
+      for (MachineFunction::iterator bb = F.begin(); bb != F.end(); bb++) {
+	// print number of basic block
+	std::cerr << "BASIC BLOCK #" << bb->getNumber();
+	// print live before and after sets
+	std::cerr << "  L-Before: ";
+	printRegSet(liveBeforeMap[bb]);
+	std::cerr << "  L-After: ";
+	printRegSet(liveAfterMap[bb]);
+	std::cerr << "\n";
+	
+	// iterate over instructions, printing each live set
+	// (note that liveAfter of one instruction is liveBefore of the next one)
+	for (MachineBasicBlock::iterator inIt = bb->begin(), ine = bb->end();
+	     inIt != ine; inIt++) {
+	  std::cerr << "%" << InstrToNumMap[inIt] << ": ";
+	  std::cerr << " L-Before: ";
+	  printRegSet(insLiveBeforeMap[inIt]);
+	  std::cerr << "\tL-After: ";
+	  printRegSet(insLiveAfterMap[inIt]);
+	  std::cerr << "\n";
+	}
+      }
+    }
+    
+    // **********************************************************************
+    // printRDResults
+    //
+    // given: MachineFunction F
+    //
+    // do:    for each basic block in F {
+    //           print fn name, bb number, RDBefore and After sets
+    //           for each instruction, print instruction num, RDBefore and
+    //               RDAfter
+    //        }
+    // 
+    // **********************************************************************
+    void printRDResults(MachineFunction &F) {
+      std::cerr << "\n";
+      
+      // iterate over all basic blocks
+      for (MachineFunction::iterator bb = F.begin(); bb != F.end(); bb++) {
+	// print number of basic block
+	std::cerr << "BASIC BLOCK #" << bb->getNumber();
+	// print RD before and after sets
+	std::cerr << "  RD-Before: ";
+	printRDSet(RDbeforeMap[bb]);
+	std::cerr << "  RD-After: ";
+	printRDSet(RDafterMap[bb]);
+	std::cerr << "\n";
+	
+	// iterate over instructions, printing each RD set
+	// (note that RDAfter of one instruction is RDBefore of the next one)
+	for (MachineBasicBlock::iterator inIt = bb->begin(), ine = bb->end();
+	     inIt != ine; inIt++) {
+	  std::cerr << "%" << InstrToNumMap[inIt] << ": ";
+	  std::cerr << " RD-Before: ";
+	  printRDSet(insRDbeforeMap[inIt]);
+	  std::cerr << "\nRD-After: ";
+	  printRDSet(insRDafterMap[inIt]);
+	  std::cerr << "\n";
+	}
+      }
+    }
+    
+    // **********************************************************************
+    // printRegSet
+    //
+    // given: S      ptr to set of regs (unsigned)
+    // do:    print the set
+    // ********************************************************************
+    void printRegSet(set<unsigned> *S) {
+      std::cerr << "{";
+      for (set<unsigned>::iterator IT = S->begin(); IT != S->end(); IT++) {
+	unsigned reg = *IT;
+	std::cerr << " " << reg;
+      }
+      std::cerr << " }\n";
+    }
+      
+    // **********************************************************************
+    // printRegSetWithAliases
+    //
+    // given: S      ptr to set of regs (unsigned)
+    // do:    print the set
+    // ********************************************************************
+    void printRegSetWithAliases(set<unsigned> *S) {
+      std::cerr << "{";
+      const uint16_t *aliasSet;
+      set<unsigned> aliases;
+      for (set<unsigned>::iterator IT = S->begin(); IT != S->end(); IT++) {
+	unsigned reg = *IT;
+	std::cerr << " " << reg;
+	if (TargetRegisterInfo::isPhysicalRegister(reg)) {
+	  aliasSet = TRI->getAliasSet(reg);      
+	  while (aliasSet != NULL && *aliasSet != 0) {
+	    aliases.insert(*aliasSet);
+	    aliasSet++;
+	  }
+	}
+      }
+      std::cerr << " }\n";
+      std::cerr << "ALIASES: {";
+      for(set<unsigned>::iterator IT = aliases.begin(); IT != aliases.end();
+	  IT++) {
+	std::cerr << " " << *IT;
+      }
+      std::cerr << "}\n";
+    }
+      
+    // **********************************************************************
+    // printRDSet
+    //
+    // given: S      ptr to set of RDfact
+    // do:    print the set
+    // **********************************************************************
+    void printRDSet(set<RDfact *> *S) {
+      std::cerr << "{";
+      for (set<RDfact *>::iterator IT = S->begin(); IT != S->end(); IT++) {
+	RDfact *oneRDfact = *IT;
+	MachineInstr *oneIns = oneRDfact->getInstr();
+	std::cerr << "(" << oneRDfact->getReg() << ", %"
+	     << InstrToNumMap[oneIns] << ") ";
+      }
+      std::cerr << " }";
+    }
+    
+    //**********************************************************************
+    // getDefReg
+    //
+    // given: instr  ptr to MachineInstr
+    // do:    return the reg defined there
+    //**********************************************************************
+    unsigned getDefReg(MachineInstr *instr) {
+      int numOp = instr->getNumOperands();
+      for (int i = 0; i < numOp; i++) {
+	MachineOperand MOp = instr->getOperand(i);  
+	if (MOp.isReg() && MOp.getReg() 
+	    && MOp.isDef()) {
+	  return MOp.getReg();
+	}
+      }
+      std::cerr << "INTERNAL ERROR: NO DEFINED REG IN getDefReg\n";
+      exit(1);
+    }
+    
+    //**********************************************************************
+    // member
+    // given: oneFact  ptr to an RDfact
+    //        S        ptr to set of RDfact *
+    //
+    // do:    return true iff oneFact is in S
+    //**********************************************************************
+    bool member(RDfact *oneFact, set<RDfact *> *S) {
+      for (set<RDfact *>::iterator IT = S->begin(); IT != S->end(); IT++) {
+	RDfact *curr = *IT;
+	if ((curr->getReg() == oneFact->getReg()) &&
+	    (curr->getInstr() == oneFact->getInstr())) return true;
+      }
+      return false;
+    }
+    
+    //**********************************************************************
+    // printRegSet
+    //**********************************************************************
+    void printRegSet(set<unsigned> S) {
+      for (set<unsigned>::iterator IT = S.begin(); IT != S.end(); IT++) {
+	unsigned reg = *IT;
+	std::cerr << reg << " ";
+      }
+    }
+    
+d59 1
+a59 1
+  // The library-inclusion mechanism requires the following runes:
+@
+
+
+1.8
+log
+@before removing as much as possible
+@
+text
+@@
+
+
+1.7
+log
+@*** empty log message ***
+@
+text
+@d19 1
+a21 1
+using namespace std;
+a30 1
+    MachineRegisterInfo *MRI;
+a31 3
+    MachineFunction *MF;
+    const TargetMachine *TM;
+    const TargetInstrInfo *TII;
+d33 2
+a34 1
+    static const bool DEBUG_LIVE = true;
+a40 4
+    // reg class -> spill regs for that class
+    map<int, set<unsigned>*> regClassToSpillPregSetMap;
+    // reg class -> avail regs for that class
+    map<int, set<unsigned>*> regClassToAvailPregSetMap; 
+d64 1
+a64 1
+    Gcra() : MachineFunctionPass(&ID) {
+d74 1
+a74 3
+      // get pointers to stuff that doesn't change over this fn
+      // e.g., the register info classes
+      MRI = &Fn.getRegInfo();
+a75 3
+      MF = &Fn;
+      TM = &Fn.getTarget();
+      TII = TM->getInstrInfo();
+d77 5
+a81 5
+      // GET NUM REGISTER CLASSES IF NOT ALREADY DONE
+      getNumRegClasses(Fn);
+      
+      // INITIALIZE
+      //      Fn.RenumberBlocks();
+a84 2
+      regClassToSpillPregSetMap.clear();
+      regClassToAvailPregSetMap.clear();
+d103 2
+a104 5
+      bool vregsExist = doInit(Fn);
+      if (!vregsExist) {
+	cerr << "No virtual registers in this code!\n";
+	return 0;
+      }
+d107 1
+a107 1
+	cerr << "START INITIAL INSTRUCTIONS FOR " << Fn.getFunction()->getName()
+d112 7
+a118 2
+      
+      // STEP 2: live analysis for all registers
+d124 6
+a129 1
+      // STEP 3: reaching defs analysis
+d135 1
+a135 1
+      exit(0);
+a152 1
+    //  defset:        set of all instructions at which some reg is defined
+a154 5
+    //  regClassToSpillPregSetMap:  
+    //                 map from reg class to set of spill pregs for that class
+    //  regClassToAvailPregSetMap
+    //                 map from reg class to set of all pregs not in the
+    //                 spillPregSet for that class
+d156 1
+a156 1
+    bool doInit(MachineFunction &Fn) {
+d170 1
+a170 2
+	    if (MOp.isReg() && MOp.getReg() 
+		&& MOp.isDef()) {
+d179 1
+a179 1
+		const unsigned *aliasSet = TRI->getAliasSet(reg);
+a188 2
+      
+      return true;
+d782 1
+a782 1
+	const unsigned *aliasSet = TRI->getAliasSet(reg);
+d797 1
+a797 1
+	cerr << "Basic Block " << bb->getNumber() << "\n";
+d801 2
+a802 2
+	  cerr << "%" << InstrToNumMap[oneI] << "( " << oneI << "): ";
+	  cerr << *oneI << "\n";
+d821 1
+a821 1
+      cerr << "\nLIVE VARS\n";
+d826 1
+a826 1
+	cerr << "BASIC BLOCK #" << bb->getNumber();
+d828 1
+a828 1
+	cerr << "  L-Before: ";
+d830 1
+a830 1
+	cerr << "  L-After: ";
+d832 1
+a832 1
+	cerr << "\n";
+d838 2
+a839 2
+	  cerr << "%" << InstrToNumMap[inIt] << ": ";
+	  cerr << " L-Before: ";
+d841 1
+a841 1
+	  cerr << "\tL-After: ";
+d843 1
+a843 1
+	  cerr << "\n";
+d861 1
+a861 1
+      cerr << "\n";
+d866 1
+a866 1
+	cerr << "BASIC BLOCK #" << bb->getNumber();
+d868 1
+a868 1
+	cerr << "  RD-Before: ";
+d870 1
+a870 1
+	cerr << "  RD-After: ";
+d872 1
+a872 1
+	cerr << "\n";
+d878 2
+a879 2
+	  cerr << "%" << InstrToNumMap[inIt] << ": ";
+	  cerr << " RD-Before: ";
+d881 1
+a881 1
+	  cerr << "\nRD-After: ";
+d883 1
+a883 1
+	  cerr << "\n";
+d895 1
+a895 1
+      cerr << "{";
+d898 1
+a898 1
+	cerr << " " << reg;
+d900 1
+a900 1
+      cerr << " }\n";
+d910 2
+a911 2
+      cerr << "{";
+      const unsigned *aliasSet;
+d915 1
+a915 1
+	cerr << " " << reg;
+d924 2
+a925 2
+      cerr << " }\n";
+      cerr << "ALIASES: {";
+d928 1
+a928 1
+	cerr << " " << *IT;
+d930 1
+a930 1
+      cerr << "}\n";
+d940 1
+a940 1
+      cerr << "{";
+d944 1
+a944 1
+	cerr << "(" << oneRDfact->getReg() << ", %"
+d947 1
+a947 1
+      cerr << " }";
+d965 1
+a965 1
+      cerr << "INTERNAL ERROR: NO DEFINED REG IN getDefReg\n";
+d991 1
+a991 81
+	cerr << reg << " ";
+      }
+    }
+    
+    //**********************************************************************
+    // getNumRegClasses
+    //
+    // set field numRegClasses to value for this machine arch
+    //**********************************************************************
+    void getNumRegClasses(MachineFunction &Fn) {
+      numRegClasses = TRI->getNumRegClasses();
+    }
+    
+    //**********************************************************************
+    // contains
+    //
+    // given: ptr to vector of unsigned
+    //        one unsigned value
+    //
+    // do: return T iff value is in vector
+    //**********************************************************************
+    bool contains(vector<unsigned> *V, unsigned val) {
+      for (int k=0; k<V->size(); k++) {
+	if ((*V)[k] == val) return true;
+      }
+      return false;
+    }
+    
+    //**********************************************************************
+    // getRegClass
+    //
+    // if given reg is a vreg
+    // then return its class
+    // else return -1
+    //**********************************************************************
+    int getRegClass(unsigned reg) {
+      if (TargetRegisterInfo::isPhysicalRegister(reg)) return -1;
+      else return MRI->getRegClass(reg)->getID();
+    }
+    
+    //**********************************************************************
+    // getAvailRegs
+    //
+    //**********************************************************************
+    set<unsigned> *getAvailRegs(unsigned reg) {
+      int regClass = getRegClass(reg);
+      if (regClass == -1) {
+	// reg is a preg
+	// return it and all aliases
+	set<unsigned> *S = new set<unsigned>();
+	S->insert(reg);
+	addAliases(S, reg);
+	return S;
+      } else {
+	// reg is a vreg
+	// get available pregs from field
+	return regClassToAvailPregSetMap[regClass];
+      }
+    }
+    
+    //**********************************************************************
+    // printAvailRegs
+    //**********************************************************************
+    void printAvailRegs() {
+      cerr << "Allocatable Registers for each class\n";
+      for (int k=1; k<=numRegClasses; k++) {
+	set<unsigned> *spillPregSet = regClassToSpillPregSetMap[k];
+	cerr << k << "\t{";
+	for (set<unsigned>::iterator it = spillPregSet->begin();
+	     it != spillPregSet->end(); it++) {
+	  unsigned num = *it;
+	  cerr << " " << num;
+	}
+	
+	set<unsigned> *availPregSet = regClassToAvailPregSetMap[k];
+	for (set<unsigned>::iterator it = availPregSet->begin();
+	     it != availPregSet->end(); it++) {
+	  unsigned num = *it;
+	  cerr << " " << num;
+	}
+	cerr << " }\n";
+@
+
+
+1.6
+log
+@*** empty log message ***
+@
+text
+@a42 1
+    set<unsigned> definedRegSet; // pregs defined in one fn including aliases
+a93 1
+      definedRegSet.clear();
+a159 1
+    //  definedRegSet: set of all preg defined in this fn 
+a189 1
+	      definedRegSet.insert(reg);
+a190 1
+	      // add aliases of defined reg to definedRegSet
+a194 1
+		  definedRegSet.insert(*aliasSet);
+@
+
+
+1.5
+log
+@*** empty log message ***
+@
+text
+@d37 2
+a38 1
+    static const bool DEBUG_EAS = true;
+a43 2
+    set<MachineInstr *> defSet;  // CFG node at which a reg (p or v) is defined
+                                 // initial live ranges are computed for each
+a95 1
+      defSet.clear();
+a128 2
+	cerr << "\nEND INSTRUCTIONS FOR " << Fn.getFunction()->getName()
+	     << "\n\n";
+d134 1
+a134 1
+      if (DEBUG_EAS) {
+d140 1
+a140 1
+      if (DEBUG_EAS) {
+a193 1
+	      defSet.insert(MBBIt);
+a209 47
+      // now fill in regClassToSpillPregSetMap and regClassToAvailPregSetMap
+      
+      for (int k=1; k<=numRegClasses; k++) {
+	// for each register class
+	// iterate over the set of preg's that can be allocated to a vreg
+	// in that class
+	// put the first 3 that are not in definedRegSet
+	// in the spillPregSet for that class
+	// put all other pregs (including those in definedRegSet) in
+	// the availPregVector for that class;
+	// if there are less than 3, then put ALL pregs (including those in
+	// definedRegSet) into spillPregSet
+	set<unsigned> *spillPregSet  = new set<unsigned>();
+	set<unsigned> *availPregSet = new set<unsigned>();
+	regClassToSpillPregSetMap[k] = spillPregSet;
+	regClassToAvailPregSetMap[k] = availPregSet;
+	MachineFunction *MF = &Fn;
+	const TargetRegisterClass *trc = TRI->getRegClass(k);
+	TargetRegisterClass::iterator rItr = trc->allocation_order_begin(*MF);
+	TargetRegisterClass::iterator rEnd = trc->allocation_order_end(*MF);
+	while (rItr != rEnd) {
+	  unsigned preg = *rItr;
+	  if (definedRegSet.find(preg) == definedRegSet.end() &&
+	      spillPregSet->size() < 3) {
+	    spillPregSet->insert(preg);
+	  } else {
+	    availPregSet->insert(preg);
+	  }
+	  rItr++;
+	}  // end iterate over allocatable regs for this class
+	
+	// see if we were able to allocate 3 spill regs
+	// if not, make ALL allocatable regs for this class be
+	// spill regs so that no live range for this class gets colored
+	if (spillPregSet->size() < 3) {
+	  rItr = trc->allocation_order_begin(*MF);
+	  rEnd = trc->allocation_order_end(*MF);
+	  while (rItr != rEnd) {
+	    unsigned preg = *rItr;
+	    availPregSet->erase(preg);
+	    spillPregSet->insert(preg);
+	    rItr++;
+	  } // end iterate over allocatable regs for this class again
+	} // end couldn't get 3 spill regs for this class
+	
+      } // end iterate over register classes
+      
+@
+
+
+1.4
+log
+@*** empty log message ***
+@
+text
+@d38 1
+a38 1
+    static const bool PRINT_INST = true;
+a79 32
+    // 0. If numRegClasses == 0 (this is the first fn)
+    //    then find out how many register classes there are.
+    //
+    // 1. Initialize the following:
+    //   (a) definedRegSet: set of all of the pregs and their aliases that are
+    //                      defined in this fn.
+    //   (b) defset:        set of MachineInstr's that involve defs of those
+    //                      regs (these will be the heads of the live ranges)
+    //   (c) RDfactSet:     set of all reaching-defs facts in this fn
+    //   (d) InstrToNumMap: map machine instructions to numbers for
+    //                      debugging output
+    //   (e) regClassToSpillPregSetMap:
+    //                      map from register class to set of 3 physical
+    //                      registers usable by vregs in that class; i.e.,
+    //                      not used anywhere in the fn including
+    //                      as aliases of used pregs; some classes may not
+    //                      have 3 available; in that case, make *all*
+    //                      pregs for that class "spill" regs
+    //   (f) regClassToAvailPregSetMap:
+    //                      map from register class to set of pregs
+    //                      usable by vregs in that class, except the
+    //                      spill ones and their aliases
+    //    
+    // 2. Do live analysis for all regs in the set;
+    // 3. Do reaching defs analysis
+    // 4. Compute initial live ranges
+    // 5. Compute final live ranges
+    // 6. Build the interference graph
+    // 7. Color the graph
+    // 8. Handle all colored live ranges, then all uncolored ones
+    //    For colored ranges, save the allocated register across all calls.
+    //
+a92 3
+      if (DEBUG_EAS) {
+	cerr << "Number of register classes: " << numRegClasses << "\n";
+      }
+d888 1
+a888 1
+    //           print fn name, bb name, liveBefore and After sets
+d897 10
+a906 13
+      if (DEBUG_EAS) {
+	for (MachineFunction::iterator MFIt = F.begin(), MFendIt = F.end();
+	     MFIt != MFendIt; MFIt++) {
+	  for (MachineBasicBlock::iterator MBBIt = MFIt->begin(),
+		 MBBendIt = MFIt->end(); MBBIt != MBBendIt; MBBIt++) {
+	    //*MBBIt is a MachineInstr
+	    MachineInstr *instr = MBBIt;
+	    set <unsigned> *liveBefore = insLiveBeforeMap[instr];
+	    printRegSet(liveBefore);
+	    cerr << "\n";
+	  }
+	}
+      } else {
+d908 9
+a916 9
+	// iterate over all basic blocks
+	for (MachineFunction::iterator bb = F.begin(); bb != F.end(); bb++) {
+	  // print number of basic block
+	  cerr << "BASIC BLOCK #" << bb->getNumber();
+	  // print live before and after sets
+	  cerr << "  L-Before: ";
+	  printRegSet(liveBeforeMap[bb]);
+	  cerr << "  L-After: ";
+	  printRegSet(liveAfterMap[bb]);
+a917 12
+	  
+	  // iterate over instructions, printing each live set
+	  // (note that liveAfter of one instruction is liveBefore of the next one)
+	  for (MachineBasicBlock::iterator inIt = bb->begin(), ine = bb->end();
+	       inIt != ine; inIt++) {
+	    cerr << "%" << InstrToNumMap[inIt] << ": ";
+	    cerr << " L-Before: ";
+	    printRegSet(insLiveBeforeMap[inIt]);
+	    cerr << "\tL-After: ";
+	    printRegSet(insLiveAfterMap[inIt]);
+	    cerr << "\n";
+	  }
+d928 1
+a928 1
+    //           print fn name, bb name, RDBefore and After sets
+@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@a37 7
+    static const bool DEBUG = false;
+    static const bool DEBUG_CALL = false;
+    static const bool DEBUG_SPILL = false;
+    static const bool DEBUG_REG = false;
+    static const bool DEBUG_DEFS = false;
+    static const bool DEBUG_ALIAS = false;
+    static const bool DEBUG_OVERLAP = false;
+a38 4
+    static const bool PRINT_RANGES = false;
+    static const bool PRINT_GRAPH = false;
+    static const bool PRINT_COLORS = false;
+    static const bool QUIT_IF_SPILL = true;
+a169 15
+      if (DEBUG_EAS) {
+	printAvailRegs();
+      }
+      
+      if (DEBUG_REG) {
+	for (int k=1; k<=numRegClasses; k++) {
+	  set<unsigned> *spillPregSet = regClassToSpillPregSetMap[k];
+	  cerr << "regClass " << k << " SpillRegs: ";
+	  printRegSet(spillPregSet);
+	  set<unsigned> *availPregSet = regClassToAvailPregSetMap[k];
+	  cerr << "\tAvailRegs: ";
+	  printRegSet(availPregSet);
+	  cerr << "\n";
+	}
+      }
+a239 4
+		  if (DEBUG_ALIAS) {
+		    cerr << "Found an alias: " << *aliasSet
+			 << " of a used preg: " << reg << "\n";
+		  }
+a808 5
+	  if (DEBUG_DEFS) {
+	    if (InstrToNumMap[instruct] == 5) {
+	      cerr << "DEF AT %5: " << reg << "\n";
+	    }
+	  }
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@a547 12
+    //**********************************************************************
+    // regSetOverlap
+    //**********************************************************************
+    bool regSetOverlap(set<unsigned> *S1, set<unsigned> *S2) {
+      for (set<unsigned>::iterator IT = S1->begin();
+	   IT != S1->end(); IT++) {
+	unsigned oneReg = *IT;
+	if (S2->find(oneReg) != S2->end()) return true;
+      }
+      return false;
+    }
+    
+a1092 12
+    // printRegVector
+    //
+    // given: V      ptr to vector of regs (unsigned)
+    // do:    print the regs
+    // **********************************************************************
+    void printRegVector(vector<unsigned> *V) {
+      for (unsigned k=0; k<V->size(); k++) {
+	cerr << " " << (*V)[k];
+      }
+    }
+    
+    // **********************************************************************
+a1154 168
+    // generateLoadBeforeNextInst
+    //**********************************************************************
+    void generateLoadBeforeNextInst(MachineBasicBlock *MBB, MachineInstr *inst,
+				    unsigned preg, int frameIndex,
+				    const TargetRegisterClass *RC) {
+      for (MachineBasicBlock::iterator IT = MBB->begin();
+	   IT != MBB->end(); IT++) {
+	MachineInstr *oneInst = IT;
+	if (oneInst == inst) {
+	  IT++;
+	  if (IT == MBB->end()) {
+	    generateLoadBeforeNextBB(MBB, preg, frameIndex, RC);
+	    return;
+	  }
+	  oneInst = IT;
+	  if (DEBUG_CALL) {
+	    cerr << "Load instruction after instr "
+		 << InstrToNumMap[oneInst] << ": " << *oneInst
+		 << " to preg: " << preg << "\n";
+	  }
+	  TII->loadRegFromStackSlot(*MBB, oneInst, preg, frameIndex, RC);
+	} // end oneInst == inst
+      }
+    }
+    
+    //**********************************************************************
+    // generateSpill
+    //**********************************************************************
+    void generateSpill(MachineBasicBlock *MBB, 
+		       MachineInstr *defInst,
+		       unsigned spillReg,
+		       int frameIndex,
+		       const TargetRegisterClass *RC) {
+      for (MachineBasicBlock::iterator IT = MBB->begin();
+	   IT != MBB->end(); IT++) {
+	MachineInstr *oneInst = IT;
+	if (oneInst == defInst) {
+	  IT++;
+	  if (IT == MBB->end()) {
+	    generateSpillNextBB(MBB, spillReg, frameIndex, RC);
+	    return;
+	  } else {
+	    oneInst = IT;
+	    if (DEBUG) {
+	      cerr << "storing reg " << spillReg << " before instruction "
+		   << InstrToNumMap[oneInst] << 
+		" (" << oneInst << ") in frame "
+		   << frameIndex << "\n";
+	    }
+	    
+	    TII->storeRegToStackSlot(*MBB, oneInst, spillReg, true,
+				     frameIndex, RC);
+	    return;
+	  }
+	}
+      } // end iterate over all instructions in this basic block
+    }
+    
+    //**********************************************************************
+    // generateLoadBeforeNextBB
+    //
+    // generate a load from frameIndex into preg before the first
+    // instruction of the back block that follows MBB
+    //**********************************************************************
+    void generateLoadBeforeNextBB(MachineBasicBlock *MBB, unsigned preg,
+				  int frameIndex,
+				  const TargetRegisterClass *RC) {
+      for (MachineFunction::iterator IT = MF->begin();
+	   IT != MF->end(); IT++) {
+	MachineBasicBlock *oneBB = IT;
+	if (oneBB == MBB) {
+	  IT++;
+	  if (IT == MF->end()) {
+	    cerr << "ERROR: no BB after one with call\n";
+	    exit(1);
+	  }
+	  oneBB = IT;
+	  MachineBasicBlock::iterator InIt = oneBB->begin();
+	  MachineInstr *oneInst = InIt;
+	  TII->loadRegFromStackSlot(*MBB, oneInst, preg, frameIndex, RC);
+	}
+      }
+    }
+    
+    //**********************************************************************
+    // generateSpillNextBB
+    //**********************************************************************
+    void generateSpillNextBB(MachineBasicBlock *MBB, unsigned spillReg,
+			     int frameIndex, const TargetRegisterClass *RC) {
+      for (MachineFunction::iterator IT = MF->begin();
+	   IT != MF->end(); IT++) {
+	MachineBasicBlock *oneBB = IT;
+	if (oneBB == MBB) {
+	  IT++;
+	  if (IT == MF->end()) {
+	    cerr << "ERROR: def in last instruction of BB "
+		 << MBB->getNumber() << " with no following bb!\n" << "\n";
+	  }
+	  oneBB = IT;
+	  MachineBasicBlock::iterator InIt = oneBB->begin();
+	  MachineInstr *oneInst = InIt;
+	  if (DEBUG) {
+	    cerr << "storing reg " << spillReg << " before instruction "
+		 << InstrToNumMap[oneInst] << 
+	      " (" << oneInst << ") in basic block " << oneBB->getNumber()
+		 << " in frame "
+		 << frameIndex << "\n";
+	  }
+	  TII->storeRegToStackSlot(*oneBB, oneInst, spillReg, true,
+				   frameIndex, RC);
+	  return;
+	}
+      }
+      cerr << "INTERNAL ERROR: can't find basic block in generateSpillNextBB\n";
+      exit(1);
+    }
+    
+    
+    //**********************************************************************
+    // getSpillReg
+    //**********************************************************************
+    unsigned getSpillReg(unsigned vreg,
+			 const TargetRegisterClass *RC,
+			 set<unsigned> *usedPregSet,
+			 MachineInstr *instr) {
+      set<unsigned> *availPregs = regClassToSpillPregSetMap[RC->getID()];
+      set<unsigned> *candidates = regSetSubtract(availPregs, usedPregSet);
+      if (candidates->size() == 0) {
+	cerr << "ERROR: No available preg for vreg " << vreg << "\n";
+	cerr << " in reg class " << RC->getID() << "\nat instruction "
+	     << InstrToNumMap[instr] << " of function " 
+	     << MF-> getFunction()->getName() << "\n";
+	cerr << "Spill regs for this class: ";
+	for (set<unsigned>::iterator IT = availPregs->begin();
+	     IT != availPregs->end(); IT++ ) {
+	  cerr << *IT << " ";
+	}
+	cerr << "\n";
+	cerr << "used set: ";
+	for (set<unsigned>::iterator IT = usedPregSet->begin();
+	     IT != usedPregSet->end(); IT++ ) {
+	  cerr << *IT << " ";
+	}
+	cerr << "\n";
+	exit(1);
+      }
+      return *(candidates->begin());
+    }
+    
+    //**********************************************************************
+    // checkRegMap
+    //**********************************************************************
+    void checkRegMap(unsigned vreg, unsigned preg, MachineFunction &Fn) {
+      MachineFunction *MF = &Fn;
+      const TargetRegisterClass *trc = MRI->getRegClass(vreg);
+      TargetRegisterClass::iterator rItr = trc->allocation_order_begin(*MF);
+      TargetRegisterClass::iterator rEnd = trc->allocation_order_end(*MF);
+      while (rItr != rEnd) {
+	unsigned onePreg = *rItr;
+	if (onePreg == preg) return;
+	rItr++;
+      }
+      // here if preg NOT allocatable to vreg
+      cerr << "INTERNAL ERROR: Cannot map " << vreg << " to " << preg << "\n";
+      exit(1);
+    }
+    
+    //**********************************************************************
+a1190 11
+    // availRegOverlap
+    //
+    // return T iff the two given regs have available pregs in common
+    //**********************************************************************
+    bool availRegOverlap(unsigned reg1, unsigned reg2) {
+      set<unsigned> *S1 = getAvailRegs(reg1);
+      set<unsigned> *S2 = getAvailRegs(reg2);
+      return (regSetOverlap(S1, S2));
+    }
+    
+    //**********************************************************************
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@a16 1
+#include "LiveRange.h"
+a77 4
+    // set of live ranges
+    set<LiveRange *> liveRangeSet; 
+    
+    
+a146 1
+      liveRangeSet.clear();
+a946 32
+    // printInterferenceGraph
+    // **********************************************************************
+    void printInterferenceGraph() {
+      for (set<LiveRange *>::iterator IT = liveRangeSet.begin();
+	   IT != liveRangeSet.end(); IT++) {
+	LiveRange *oneLR = *IT;
+	cerr << oneLR->getReg() << "'s neighbors: ";
+	set<LiveRange *> neighbors = oneLR->getNeighbors();
+	for (set<LiveRange *>::iterator NIT = neighbors.begin();
+	     NIT != neighbors.end(); NIT++) {
+	  LiveRange *oneNeighbor = *NIT;
+	  cerr << oneNeighbor->getReg() << " ";
+	}
+	cerr << "\n";
+      }
+    }
+    
+    
+    // **********************************************************************
+    // printColors
+    // **********************************************************************
+    void printColors() {
+      for (set<LiveRange *>::iterator IT = liveRangeSet.begin();
+	   IT != liveRangeSet.end(); IT++) {
+	LiveRange *oneLR = *IT;
+	cerr << oneLR->getReg() << " has color " << oneLR->getColor()
+	     << "\n";
+      }
+    }
+    
+    
+    // **********************************************************************
+a962 11
+    // **********************************************************************
+    // printLiveRanges
+    // **********************************************************************
+    void printLiveRanges() {
+      for (set<LiveRange *>::iterator IT = liveRangeSet.begin();
+	   IT != liveRangeSet.end(); IT++) {
+	LiveRange *oneLiveRange = *IT;
+	oneLiveRange->print(InstrToNumMap);
+	cerr << "\n";
+      }
+    }
+a1133 99
+    // computeInitialLiveRanges
+    //
+    // for each instruction in defSet compute one live range for each
+    // register defined at that instrution and add it to liveRangeSet
+    //**********************************************************************
+    void computeInitialLiveRanges(MachineFunction &Fn) {
+      for (set<MachineInstr *>::iterator IT = defSet.begin();
+	   IT != defSet.end(); IT++) {
+	MachineInstr *instr = *IT;
+	set<unsigned> *defRegSet = getOneInstrRegDefs(instr);
+	if (defRegSet->size()  == 0) {
+	  cerr << "INTERNAL ERROR: no defined reg for instrution "
+	       << *instr << " which is in defSet\n";
+	  exit(1);
+	}
+	for (set<unsigned>::iterator defIt = defRegSet->begin();
+	     defIt != defRegSet->end(); defIt++) {
+	  unsigned reg = *defIt;
+	  int regClass = getRegClass(reg);
+	  LiveRange *oneLiveRange = new LiveRange(reg, regClass);
+	  oneLiveRange->addInstr(instr);
+	  
+	  // iterate over all instructions I in the fn
+	  // if reg is in live-before set, and (reg, instr) in RD-before set
+	  // then add I to this live range
+	  RDfact *currRDfact = new RDfact(reg, instr);
+	  for (MachineFunction::iterator MFIt = Fn.begin(), MFendIt = Fn.end();
+	       MFIt != MFendIt; MFIt++) {
+	    for (MachineBasicBlock::iterator I = MFIt->begin(),
+		   MBBendIt = MFIt->end(); I != MBBendIt; I++) {
+	      //*I is a MachineInstr
+	      set<unsigned> *liveBefore = insLiveBeforeMap[I];
+	      set<RDfact *> *RDbefore = insRDbeforeMap[I];
+	      if ((liveBefore->find(reg) != liveBefore->end()) &&
+		  member(currRDfact, RDbefore)) {
+		oneLiveRange->addInstr(I);
+	      }
+	    } // end iterate over all instructions in 1 basic block
+	  } // end iterate over all basic blocks in this fn
+	  
+	    // add new live range to set
+	  liveRangeSet.insert(oneLiveRange);
+	} // end iterate over all registers defined at this instruction
+      } // end iterate over all instructions in defSet
+    }
+    
+    //**********************************************************************
+    // computeFinalLiveRanges
+    //
+    // for each live range
+    //    find and absorb any overlapping live range for the same var
+    //
+    // do this by first creating a vector of live ranges to iterate over
+    //**********************************************************************
+    void computeFinalLiveRanges() {
+      vector<LiveRange *> LRvector;
+      for (set<LiveRange *>::iterator IT = liveRangeSet.begin();
+	   IT != liveRangeSet.end(); IT++) {
+	LiveRange *oneRange = *IT;
+	LRvector.push_back(oneRange);
+      } // end iterate over liveRangeSet
+      
+	// now iterate over the vector
+	// keep a set of indexes of live ranges that should have been
+	// removed from the vector except that I don't know how to do that
+	// efficiently (but ignore those elements)
+      set<unsigned> removedIndexes;
+      for (unsigned k=0; k<LRvector.size(); k++) {
+	LiveRange *currRange = LRvector[k];
+	for (unsigned j=k+1; j<LRvector.size(); j++) {
+	  if (removedIndexes.find(j) == removedIndexes.end()) {
+	    LiveRange *nextRange = LRvector[j];
+	    if (currRange->getReg() == nextRange->getReg()) {
+	      // two live ranges for same var
+	      // see if they overlap
+	      // if yes, currRange "absorbs" nextRange
+	      if (overlap(currRange, nextRange)) {
+		if (DEBUG_OVERLAP) {
+		  cerr << "FOUND OVERLAPPING LIVE RANGES FOR "
+		       << currRange->getReg() << "\n";
+		}
+		set<MachineInstr *> nextRangeSet = nextRange->getInstrSet();
+		// add all instructions in nextRange to currRange
+		for (set<MachineInstr *>::iterator IT = nextRangeSet.begin();
+		     IT != nextRangeSet.end(); IT++) {
+		  MachineInstr *oneInstr = *IT;
+		  currRange->addInstr(oneInstr);
+		}
+		// remove nextRange from set of live ranges and from vector
+		liveRangeSet.erase(nextRange);
+		removedIndexes.insert(j);
+	      } // endif overlap
+	    } // endif two ranges for same var
+	  } // end if item at position j not "removed"
+	} // end iterate over rest of vector
+      } // end iterate over vector
+    }
+    
+    //**********************************************************************
+a1168 256
+    // buildInterferenceGraph
+    //
+    // Process all final live ranges
+    //    for each, find which others it overlaps with, and add them as
+    //              its neighbors.
+    //
+    // Two live ranges n, m overlap if
+    //   (a) their set of instructions overlaps, AND
+    //   (b) the set of available reigsters for the range's registers
+    //       overlap (where the "available registers for a preg are
+    //       itself and its aliases)
+    //**********************************************************************
+    void buildInterferenceGraph() {
+      if (liveRangeSet.size() == 0) return;
+      
+      // first, create a vector of all Live Ranges for better iteration
+      vector<LiveRange *> LRvector;
+      
+      // iterate over all live ranges
+      for (set<LiveRange *>::iterator IT = liveRangeSet.begin();
+	   IT != liveRangeSet.end(); IT++) {
+	LiveRange *oneRange = *IT;
+	LRvector.push_back(oneRange);
+      } // end iterate over liveRangeSet
+      
+	// now find neighbors
+      for (unsigned k=0; k<LRvector.size()-1; k++) {
+	LiveRange *currLR = LRvector[k];
+	for (unsigned j=k+1; j<LRvector.size(); j++) {
+	  LiveRange *nextLR = LRvector[j];
+	  if (overlap(currLR, nextLR)) {
+	    currLR->addNeighbor(nextLR);
+	    nextLR->addNeighbor(currLR);
+	  }
+	}
+      } // end iterate over all live ranges in the vector
+    }
+    
+    //**********************************************************************
+    // colorInterferenceGraph
+    //
+    // STEP 1: Push all nodes (live ranges)
+    // Iterate over the set of final Live Ranges until all have been pushed
+    // onto the stack.  On each iteration, push one as follows:
+    //   if # neighbers < # available regs
+    //   then push (and end iteration)
+    //   if we get to the end of an iteration and not all nodes are pushed
+    //   then choose the one with the most neighbors and push it
+    //
+    // STEP 2: Pop and color all nodes
+    // Pop one node.
+    // If its non-stacked neighbors don't use all available colors
+    // then give it a color
+    // else give it the special "no" color
+    //**********************************************************************
+    void colorInterferenceGraphs() {
+      stack<LiveRange *> LRstack = pushAllNodes();
+      popAndColorAllNodes(LRstack);
+    }
+    
+    //**********************************************************************
+    // popAndColorAllNodes
+    //
+    // Pop all nodes (live ranges); for each:
+    //   if it represents a preg
+    //   then color it with that preg number
+    //        put it back into liveRangeSet
+    //   else get the colors (non-0 preg #s) used by its processed neighbors
+    //        (those that have color != -1)
+    //        if there is still an available color
+    //        then assign it
+    //        else give it no color (zero)
+    //        put the node (live range) back into liveRangeSet
+    //**********************************************************************
+    void popAndColorAllNodes(stack<LiveRange *> LRstack) {
+      while (LRstack.size() > 0) {
+	LiveRange *oneLR = LRstack.top();
+	LRstack.pop();
+	unsigned reg = oneLR->getReg();
+	if (TargetRegisterInfo::isPhysicalRegister(reg)) {
+	  oneLR->setColor(reg);
+	  liveRangeSet.insert(oneLR);
+	} else { 
+	  // reg is a vreg
+	  set<unsigned> *neighborColors = getProcessedNeighborColors(oneLR);
+	  int color = getFreeColor(neighborColors, reg);
+	  oneLR->setColor(color);
+	  liveRangeSet.insert(oneLR);
+	} // end if reg is preg then... else...
+      } // end while stack not empty
+    }
+    
+    //**********************************************************************
+    // getProcessedNeighborColors
+    //
+    // return ptr to a set of colors: those already used by neighbors
+    // and the aliases of those colors
+    //**********************************************************************
+    set<unsigned> *getProcessedNeighborColors(LiveRange *LR) {
+      set<unsigned> *result = new set<unsigned>(); 
+      set<LiveRange *> S = LR->getNeighbors();
+      for (set<LiveRange *>::iterator IT = S.begin(); IT != S.end(); IT++) {
+	LiveRange *oneLR = *IT;
+	int color = oneLR->getColor();
+	if (color > 0) {
+	  result->insert(color);
+	  addAliases(result, color);
+	}
+      } // end iterate over neighbors
+      return result;
+    }
+    
+    //**********************************************************************
+    // getFreeColor
+    //
+    // given: ptr to a set of unsigned (used colors and their aliases)
+    //        vreg
+    //
+    // do:    if possible
+    //          return a color (a preg #) that is NOT in set of used colors
+    //          and IS available to vreg
+    //        else return 0 or quit if we can't handle spills
+    //**********************************************************************
+    int getFreeColor(set<unsigned> *S, unsigned vreg) {
+      // iterate over available pregs for vreg's class
+      // if any is not in set S, return it
+      if (DEBUG_SPILL) return 0;
+      
+      int regClass = getRegClass(vreg);
+      set<unsigned> *availSet = regClassToAvailPregSetMap[regClass];
+      for (set<unsigned>::iterator IT = availSet->begin();
+	   IT != availSet->end(); IT++) {
+	unsigned onePreg = *IT;
+	if (S->find(onePreg) == S->end()) return onePreg;
+      }
+      
+      // no available color
+      if (QUIT_IF_SPILL) {
+	cerr << "ERROR: CAN'T HANDLE SPILL\n";
+	exit(1);
+      } else return 0;
+    }
+    
+    //**********************************************************************
+    // pushAllNodes
+    //
+    // push all live ranges in liveRangeSet onto a stack and return the stack
+    // each time a live range is pushed, remove it from liveRangeSet
+    //
+    // push all live ranges for a preg LAST so they will all get their
+    // own "color"
+    //
+    // repeat {
+    //   push all "easy" vreg ranges
+    //   if a vreg range left, choose one and push it
+    //   else push all remaining nodes (all pregs)
+    // } until liveRangeSet is empty
+    //
+    //**********************************************************************
+    stack<LiveRange *> pushAllNodes() {
+      stack<LiveRange *> LRstack;
+      set<LiveRange *> stackedLRset;
+      
+      while (liveRangeSet.size() != 0) {
+	set<LiveRange *>::iterator IT = liveRangeSet.begin();
+	while (IT != liveRangeSet.end()) {
+	  LiveRange *oneLR = *IT;
+	  unsigned reg = oneLR->getReg();
+	  if (TargetRegisterInfo::isVirtualRegister(reg)) {
+	    // reg is a vreg; see if this node is "easy"
+	    int regClass = getRegClass(reg);
+	    set<unsigned> *availSet = regClassToAvailPregSetMap[regClass];
+	    if (availSet->size() == 0 ||
+		(oneLR->numUnstackedNeighbors(stackedLRset) <
+		 availSet->size())) {
+	      LRstack.push(oneLR);
+	      stackedLRset.insert(oneLR);
+	      liveRangeSet.erase(oneLR);
+	      IT = liveRangeSet.begin(); // start over
+	    } else IT++;
+	  } else IT++;
+	} // end iterate over liveRangeSet
+	if (liveRangeSet.size() != 0) {
+	  if (allPregs()) {
+	    for (set<LiveRange *>::iterator IT = liveRangeSet.begin();
+		 IT != liveRangeSet.end(); IT++) {
+	      LiveRange *oneLR = *IT;
+	      LRstack.push(oneLR);
+	      stackedLRset.insert(oneLR);
+	    }
+	    liveRangeSet.clear();
+	  } else {
+	    if (DEBUG) {
+	      cerr << liveRangeSet.size() << " non-simple nodes left in set: ";
+	      for (set<LiveRange *>::iterator IT1 = liveRangeSet.begin();
+		   IT1 != liveRangeSet.end(); IT1++) {
+		LiveRange *oneLR = *IT1;
+		cerr << oneLR->getReg() << " with "
+		     << oneLR->numUnstackedNeighbors(stackedLRset) << " ";
+	      }
+	      cerr << "\n";
+	      
+	    }
+	    LiveRange *oneLR = hasMostUnstackedNeighbors(stackedLRset);
+	    LRstack.push(oneLR);
+	    stackedLRset.insert(oneLR);
+	    liveRangeSet.erase(oneLR);
+	  }
+	}
+      } // end while there is some unpushed node
+      return LRstack;
+    }
+    
+    //**********************************************************************
+    // allPregs
+    //**********************************************************************
+    bool allPregs() {
+      for (set<LiveRange *>::iterator IT = liveRangeSet.begin();
+	   IT != liveRangeSet.end(); IT++) {
+	LiveRange *oneLR = *IT;
+	unsigned reg = oneLR->getReg();
+	if (TargetRegisterInfo::isVirtualRegister(reg)) return false;
+      }
+      return true;
+    }
+    
+    
+    //**********************************************************************
+    // hasMostUnstackedNeighbors(stackLRset);
+    //
+    // given: set of Live Ranges that are stacked
+    //
+    // do: return the live range in liveRangeSet that has the most
+    //     unstacked neighbors
+    //**********************************************************************
+    LiveRange *hasMostUnstackedNeighbors(set<LiveRange *> S) {
+      unsigned max = 0;
+      LiveRange *currMax = NULL;
+      for (set<LiveRange *>::iterator IT = liveRangeSet.begin();
+	   IT != liveRangeSet.end(); IT++) {
+	LiveRange *oneLR = *IT;
+	unsigned num = oneLR->numUnstackedNeighbors(S);
+	if (num > max) {
+	  max = num;
+	  currMax = oneLR;
+	}
+      }
+      if (currMax == NULL) {
+	cerr << "INTERNAL ERROR: no live range with max unstacked neighbors\n";
+	cerr << "Number of live ranges examined: " << S.size() << "\n";
+	exit(1);
+      }
+      return currMax;
+    }
+    
+    //**********************************************************************
+a1178 197
+    // setAllVreg
+    //
+    // iterate over all live ranges:
+    //     handle all that are for a vreg V in a COLORED range
+    // iterate again:
+    //     handle all that are for a vreg V in an UNCOLORED range
+    //
+    // we need to do these 2 passes so that an uncolored vreg doesn't
+    // get assigned a spill reg that has been allocated to another
+    // vreg in the same instruction
+    //**********************************************************************
+    void setAllVreg(MachineFunction &Fn) {
+      // handle colored ranges
+      for (set<LiveRange *>::iterator IT = liveRangeSet.begin();
+	   IT != liveRangeSet.end(); IT++) {
+	LiveRange *oneLR = *IT;
+	unsigned reg = oneLR->getReg();
+	if (TargetRegisterInfo::isVirtualRegister(reg)) {
+	  int color = oneLR->getColor();
+	  if (color > 0) handleColoredRange(Fn, oneLR, reg, color);
+	} // end if range for a vreg
+      } // end iterate over all live ranges
+      
+	// handle uncolored ranges
+      for (set<LiveRange *>::iterator IT = liveRangeSet.begin();
+	   IT != liveRangeSet.end(); IT++) {
+	LiveRange *oneLR = *IT;
+	unsigned reg = oneLR->getReg();
+	if (TargetRegisterInfo::isVirtualRegister(reg)) {
+	  int color = oneLR->getColor();
+	  if (color == 0) handleUncoloredRange(Fn, oneLR, reg);
+	} // end if range for a vreg
+      } // end iterate over all live ranges
+    }
+    
+    //**********************************************************************
+    // handleColoredRange
+    //
+    // see if there are any calls in the range;
+    // if yes, get stack space for this vreg and spill/restore
+    // across the call
+    //
+    // iterate over all instructions in the range
+    // for each instruction:
+    //   iterate over all operands
+    //   if an operand is V
+    //   then set it to V's color (the preg parameter)
+    //   if the instruction is a call, save/restore around it
+    //**********************************************************************
+    void handleColoredRange(MachineFunction &Fn, LiveRange *oneLR,
+			    unsigned vreg, unsigned preg) {
+      if (DEBUG) {
+	cerr << "setting all instances of " << vreg
+	     << " to " << preg << "\n";
+      }
+      const TargetRegisterClass *RC;
+      MachineFunction *MF = &Fn;
+      int frameIndex;
+      if (oneLR->containsCall()) {
+	// Allocate a new stack object for this preg
+	RC = MRI->getRegClass(vreg);
+	frameIndex = MF->getFrameInfo()->CreateStackObject(RC->getSize(),
+							   RC->getAlignment());
+      }
+      
+      set<MachineInstr *> insSet = oneLR->getInstrSet();
+      for (set<MachineInstr *>::iterator InstIt = insSet.begin();
+	   InstIt != insSet.end(); InstIt++) {
+	MachineInstr *oneInst = *InstIt;
+	int numOp = oneInst->getNumOperands();
+	
+	// if this is a call, save preg before the call, restore (reload) preg
+	// after the call
+	const TargetInstrDesc &TID = oneInst->getDesc();
+	if (TID.isCall()) {
+	  if (DEBUG_CALL) {
+	    cerr << "Handling call; store before instruction " <<
+	      InstrToNumMap[oneInst] << ": " << *oneInst
+		 << " from preg: " << preg << "\n";
+	  }
+	  MachineBasicBlock *MBB = oneInst->getParent();
+	  TII->storeRegToStackSlot(*MBB, oneInst, preg, true, frameIndex, RC);
+	  generateLoadBeforeNextInst(MBB, oneInst, preg, frameIndex, RC);
+	} // end this inst is a call
+	
+	  // iterate over the operands in this instruction
+	for (int i = 0; i<numOp; i++) {
+	  MachineOperand MOp = oneInst->getOperand(i);
+	  if (MOp.isReg() && (MOp.getReg() != 0) &&
+	      TargetRegisterInfo::isVirtualRegister(MOp.getReg())) {
+	    unsigned onereg = MOp.getReg();
+	    if (onereg == vreg) {
+	      // set onereg to appropriate preg
+	      oneInst->getOperand(i).setReg(preg);
+	    }
+	  } // end operand is a vreg
+	} // end iterate over all operands in this instruction
+      } // end iterate over all instructions in this live range
+    }
+    
+    
+    
+    //**********************************************************************
+    // handleUncoloredRange
+    //
+    // get stack space for this vreg
+    // iterate over all instructions in the range
+    // for each instruction:
+    //   iterate over all operands gathering used pregs
+    //   iterate over all operands again
+    //   if an operand is V
+    //   then get a spill register if we don't already have one for this instr
+    //        call setReg with spill reg
+    //        if operand is a def
+    //        then iterate over enclosing basic block to *next* instruction
+    //             and do a spill with that instr
+    //             if no "next" instruction in enclosing basic block
+    //                (i.e., block ends with a def)
+    //             then iterate over fn to *next* basic block, and
+    //                  do spill before first instr in that block
+    //        else (a use of V) load into spill reg
+    //**********************************************************************
+    void handleUncoloredRange(MachineFunction &Fn, LiveRange *oneLR,
+			      unsigned vreg) {
+      if (QUIT_IF_SPILL) {
+	cerr << "handling all instances of uncolored " << vreg << "\n";
+      }
+      set<unsigned> *usedPregSet = new set<unsigned>();
+      
+      // Allocate a new stack object for this spill location...
+      const TargetRegisterClass *RC = MRI->getRegClass(vreg);
+      MachineFunction *MF = &Fn;
+      int frameIndex = MF->getFrameInfo()->CreateStackObject(RC->getSize(),
+							     RC->getAlignment());
+      if (DEBUG) {
+	cerr << "allocating frame " << frameIndex << " for vreg "
+	     << vreg << "\n";
+      }
+      set<MachineInstr *> insSet = oneLR->getInstrSet();
+      
+      // iterate over all instructions in the range
+      for (set<MachineInstr *>::iterator InstIt = insSet.begin();
+	   InstIt != insSet.end(); InstIt++) {
+	MachineInstr *oneInst = *InstIt;
+	MachineBasicBlock *MBB = oneInst->getParent();
+	
+	// iterate over all operands creating set of used preg
+	// for this instruction
+	usedPregSet->clear();
+	int numOp = oneInst->getNumOperands();
+	for (int i = 0; i<numOp; i++) {
+	  MachineOperand MOp = oneInst->getOperand(i);
+	  if (MOp.isReg() && (MOp.getReg() != 0) &&
+	      TargetRegisterInfo::isPhysicalRegister(MOp.getReg())) {
+	    unsigned onereg = MOp.getReg();
+	    usedPregSet->insert(onereg);
+	    if (DEBUG && vreg == 1034) {
+	      cerr << "Used preg in instruction %" << InstrToNumMap[oneInst]
+		   << ": " << onereg << "\n";
+	    }
+	  } // end found a preg in this instruction
+	} // end iterate over operands in this instruction
+	
+	  // iterate over operands again
+	  // if any matches given vreg
+	  // then handle it
+	unsigned spillReg = -1;
+	for (int i = 0; i<numOp; i++) {
+	  MachineOperand MOp = oneInst->getOperand(i);
+	  if (MOp.isReg() && (MOp.getReg() != 0) &&
+	      TargetRegisterInfo::isVirtualRegister(MOp.getReg()) &&
+	      MOp.getReg() == vreg) {
+	    if (spillReg == -1) spillReg = getSpillReg(vreg, RC, usedPregSet,
+						       oneInst);
+	    oneInst->getOperand(i).setReg(spillReg);
+	    if (MOp.isDef()) {
+	      generateSpill(MBB, oneInst, spillReg, frameIndex, RC);
+	      if (DEBUG) {
+		cerr << "def causing spill: " << *oneInst << "\n";
+	      }
+	    } else {
+	      if (DEBUG) {
+		cerr << "loading reg " << spillReg 
+		     << " from frame " << frameIndex 
+		     << " before instruction " 
+		     << InstrToNumMap[oneInst] << "\n";
+	      }
+	      TII->loadRegFromStackSlot(*MBB, oneInst, spillReg,
+					frameIndex, RC);
+	    }
+	    
+	  } // end handle an instance of vreg in this instruction
+	} // end iterate over all operands in this instruction
+      } // end iterate over all instructions in this range
+    }
+    
+    //**********************************************************************
+a1382 28
+    // overlap
+    //
+    // given: LiveRange *r
+    //        map from register class to vector of available pregs
+    //
+    // do: return true iff this range's instructions have a non-empty
+    //                     intersection with r's instructions AND
+    //                     the 2 ranges have an available register in common
+    //**********************************************************************
+    bool overlap(LiveRange *r1, LiveRange *r2) {
+      unsigned reg1 = r1->getReg();
+      unsigned reg2 = r2->getReg();
+      set<MachineInstr *> range1 = r1->getInstrSet();
+      set<MachineInstr *> range2 = r2->getInstrSet();
+      
+      // check overlap of avail reg
+      if (!availRegOverlap(reg1, reg2)) return false;
+      
+      // check overlap of ranges
+      for (set<MachineInstr *>::iterator IT = range1.begin();
+	   IT != range1.end(); IT++) {
+	MachineInstr *oneIn = *IT;
+	if (range2.find(oneIn) != range2.end()) return true;
+      }
+      return false;
+    }
+    
+    //**********************************************************************
+@

@@ -1,0 +1,10 @@
+For all of the tests other than
+    replace
+    space
+    tst-params
+there should be only "easy" nodes for the stacking phase (and all ranges
+should be colored).  For the three tests above, my version is NOT able
+to color all nodes (so if you're not implementing spilling, your code
+should give an error message and quit when applied to replace, space,
+or tst-params).
+

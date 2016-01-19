@@ -1,0 +1,48 @@
+clang -emit-llvm -O0 -c if.c -o if.bc
+opt -mem2reg if.bc > if.mem2reg
+mv if.mem2reg if.bc
+llc -optimize-regalloc=0 -load Debug/lib/P4.so -regalloc=gc if.bc
+
+INTERFERENCE GRAPH FOR FUNCTION main
+
+Physical Registers
+R2's neighbors: { R43 %9 %12 }
+R2's neighbors: { R43 %17 }
+R43's neighbors: { R2 %9 }
+R43's neighbors: { R2 }
+R43's neighbors: { %19 }
+R47's neighbors: { %9 }
+R48's neighbors: { %8 %17 }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R53's neighbors: { %9 %12 }
+R53's neighbors: { %7 %8 %17 }
+R110's neighbors: { %9 %11 %12 }
+R110's neighbors: { %7 %8 %16 %17 }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { %1 %2 %3 %15 %20 }
+%1's neighbors: { %0 %2 %21 }
+%2's neighbors: { %0 %1 %21 %22 }
+%3's neighbors: { %0 %20 }
+%4's neighbors: { %5 %6 %20 }
+%5's neighbors: { %4 %6 %21 }
+%6's neighbors: { %4 %5 %21 %22 }
+%7's neighbors: { R53 R110 %8 %16 %17 %21 %22 }
+%8's neighbors: { R48 R53 R110 %7 %16 %17 %22 }
+%9's neighbors: { R2 R43 R47 R53 R110 %11 %12 %14 %15 }
+%11's neighbors: { R110 %9 %12 }
+%12's neighbors: { R2 R53 R110 %9 %11 }
+%14's neighbors: { %9 %15 }
+%15's neighbors: { %0 %9 %14 }
+%16's neighbors: { R110 %7 %8 %17 }
+%17's neighbors: { R2 R48 R53 R110 %7 %8 %16 }
+%19's neighbors: { R43 }
+%20's neighbors: { %0 %3 %4 }
+%21's neighbors: { %1 %2 %5 %6 %7 %22 }
+%22's neighbors: { %2 %6 %7 %8 %21 }
+gcc -lm if.s -o if.exe

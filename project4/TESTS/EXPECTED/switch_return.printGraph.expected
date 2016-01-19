@@ -1,0 +1,62 @@
+clang -emit-llvm -O0 -c switch_return.c -o switch_return.bc
+opt -mem2reg switch_return.bc > switch_return.mem2reg
+mv switch_return.mem2reg switch_return.bc
+llc -optimize-regalloc=0 -load Debug/lib/P4.so -regalloc=gc switch_return.bc
+
+INTERFERENCE GRAPH FOR FUNCTION main
+
+Physical Registers
+R2's neighbors: { R43 %0 %7 %8 %9 %23 %24 }
+R43's neighbors: { R2 %0 %7 %8 %9 %23 %24 }
+R43's neighbors: { %15 }
+R46's neighbors: { %0 %7 %8 %9 %23 %24 }
+R48's neighbors: { %0 %7 %8 %9 %23 %24 }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R53's neighbors: { %0 %7 %8 %9 %23 %24 }
+R76's neighbors: { %0 %7 %8 %9 %23 %24 }
+R110's neighbors: { %0 %7 %8 %9 %23 %24 }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { R2 R43 R46 R48 R53 R76 R110 %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %18 %19 %20 %21 %22 %23 %24 %26 %27 %28 %29 %30 %31 %32 %33 %34 }
+%1's neighbors: { %0 %2 %3 %18 %19 %23 %24 %27 %28 %29 %30 %31 }
+%2's neighbors: { %0 %1 %3 %4 %5 %6 %18 %19 %20 %21 %22 %23 %24 %28 %29 %30 %31 %32 %33 %34 }
+%3's neighbors: { %0 %1 %2 %23 %24 %29 %30 %31 }
+%4's neighbors: { %0 %2 %5 %20 %21 %22 %23 %24 %30 %31 %32 %33 %34 }
+%5's neighbors: { %0 %2 %4 %6 %20 %21 %22 %23 %24 %31 %32 %33 %34 }
+%6's neighbors: { %0 %2 %5 %23 %24 %32 %33 }
+%7's neighbors: { R2 R43 R46 R48 R53 R76 R110 %0 %8 %9 %10 %23 %24 %26 %27 %32 %33 %34 }
+%8's neighbors: { R2 R43 R46 R48 R53 R76 R110 %0 %7 %9 %10 %23 %24 %26 %27 %28 %33 %34 }
+%9's neighbors: { R2 R43 R46 R48 R53 R76 R110 %0 %7 %8 %10 %23 %24 %26 %27 %28 %29 %34 }
+%10's neighbors: { %0 %7 %8 %9 %23 %24 %26 }
+%13's neighbors: { %23 %24 %26 %27 %28 %29 }
+%15's neighbors: { R43 }
+%18's neighbors: { %0 %1 %2 %23 %24 %30 %31 }
+%19's neighbors: { %0 %1 %2 %23 %24 %30 %31 }
+%20's neighbors: { %0 %2 %4 %5 %23 %24 %32 %33 %34 }
+%21's neighbors: { %0 %2 %4 %5 %23 %24 %32 %33 %34 }
+%22's neighbors: { %0 %2 %4 %5 %23 %24 %32 %33 }
+%23's neighbors: { R2 R43 R46 R48 R53 R76 R110 %0 %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %13 %18 %19 %20 %21 %22 %24 %26 %27 %28 %29 %30 %31 %32 %33 %34 }
+%24's neighbors: { R2 R43 R46 R48 R53 R76 R110 %0 %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %13 %18 %19 %20 %21 %22 %23 %26 %27 %28 %29 %30 %31 %32 %33 %34 }
+%26's neighbors: { %0 %7 %8 %9 %10 %13 %23 %24 %27 %28 %29 }
+%27's neighbors: { %0 %1 %7 %8 %9 %13 %23 %24 %26 %28 %29 }
+%28's neighbors: { %0 %1 %2 %8 %9 %13 %23 %24 %26 %27 %29 }
+%29's neighbors: { %0 %1 %2 %3 %9 %13 %23 %24 %26 %27 %28 }
+%30's neighbors: { %0 %1 %2 %3 %4 %18 %19 %23 %24 %31 }
+%31's neighbors: { %0 %1 %2 %3 %4 %5 %18 %19 %23 %24 %30 }
+%32's neighbors: { %0 %2 %4 %5 %6 %7 %20 %21 %22 %23 %24 %33 %34 }
+%33's neighbors: { %0 %2 %4 %5 %6 %7 %8 %20 %21 %22 %23 %24 %32 %34 }
+%34's neighbors: { %0 %2 %4 %5 %7 %8 %9 %20 %21 %23 %24 %32 %33 }
+gcc -lm switch_return.s -o switch_return.exe

@@ -1,0 +1,396 @@
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h: In instantiation of ‘_InputIterator std::__find(_InputIterator, _InputIterator, const _Tp&, std::input_iterator_tag) [with _InputIterator = std::_Rb_tree_iterator<std::pair<const unsigned int, std::vector<unsigned int>*> >; _Tp = unsigned int]’:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:4466:45:   required from ‘_IIter std::find(_IIter, _IIter, const _Tp&) [with _IIter = std::_Rb_tree_iterator<std::pair<const unsigned int, std::vector<unsigned int>*> >; _Tp = unsigned int]’
+Gcra.cpp:540:124:   required from here
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: error: no match for ‘operator==’ in ‘__first.std::_Rb_tree_iterator<_Tp>::operator*<std::pair<const unsigned int, std::vector<unsigned int>*> >() == __val’
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note: candidates are:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algobase.h:65:0,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_tree.h:63,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/map:60,
+                 from Gcra.cpp:16:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_pair.h:206:5: note: template<class _T1, class _T2> bool std::operator==(const std::pair<_T1, _T2>&, const std::pair<_T1, _T2>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_pair.h:206:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   mismatched types ‘const std::pair<_T1, _T2>’ and ‘const unsigned int’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algobase.h:68:0,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_tree.h:63,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/map:60,
+                 from Gcra.cpp:16:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_iterator.h:293:5: note: template<class _Iterator> bool std::operator==(const std::reverse_iterator<_Iterator>&, const std::reverse_iterator<_Iterator>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_iterator.h:293:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::reverse_iterator<_Iterator>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algobase.h:68:0,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_tree.h:63,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/map:60,
+                 from Gcra.cpp:16:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_iterator.h:343:5: note: template<class _IteratorL, class _IteratorR> bool std::operator==(const std::reverse_iterator<_Iterator>&, const std::reverse_iterator<_IteratorR>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_iterator.h:343:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::reverse_iterator<_Iterator>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_tree.h:64:0,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/map:60,
+                 from Gcra.cpp:16:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/allocator.h:119:5: note: template<class _T1, class _T2> bool std::operator==(const std::allocator<_Tp1>&, const std::allocator<_T2>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/allocator.h:119:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::allocator<_Tp1>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_tree.h:64:0,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/map:60,
+                 from Gcra.cpp:16:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/allocator.h:124:5: note: template<class _Tp> bool std::operator==(const std::allocator<_Tp1>&, const std::allocator<_Tp1>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/allocator.h:124:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::allocator<_Tp1>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/map:60:0,
+                 from Gcra.cpp:16:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_tree.h:309:5: note: template<class _Val> bool std::operator==(const std::_Rb_tree_iterator<_Tp>&, const std::_Rb_tree_const_iterator<_Val>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_tree.h:309:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::_Rb_tree_iterator<_Tp>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/map:60:0,
+                 from Gcra.cpp:16:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_tree.h:863:5: note: template<class _Key, class _Val, class _KeyOfValue, class _Compare, class _Alloc> bool std::operator==(const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>&, const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_tree.h:863:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::_Rb_tree<_Key, _Val, _KeyOfValue, _Compare, _Alloc>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/map:61:0,
+                 from Gcra.cpp:16:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_map.h:889:5: note: template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator==(const std::map<_Key, _Tp, _Compare, _Alloc>&, const std::map<_Key, _Tp, _Compare, _Alloc>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_map.h:889:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::map<_Key, _Tp, _Compare, _Alloc>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/map:62:0,
+                 from Gcra.cpp:16:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_multimap.h:805:5: note: template<class _Key, class _Tp, class _Compare, class _Alloc> bool std::operator==(const std::multimap<_Key, _Tp, _Compare, _Alloc>&, const std::multimap<_Key, _Tp, _Compare, _Alloc>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_multimap.h:805:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::multimap<_Key, _Tp, _Compare, _Alloc>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/iosfwd:42:0,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/ios:39,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/ostream:40,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/iterator:64,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:26,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/postypes.h:218:5: note: template<class _StateT> bool std::operator==(const std::fpos<_StateT>&, const std::fpos<_StateT>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/postypes.h:218:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::fpos<_StateT>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/string:54:0,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/locale_classes.h:42,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/ios_base.h:43,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/ios:43,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/ostream:40,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/iterator:64,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:26,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/basic_string.h:2483:5: note: template<class _CharT, class _Traits, class _Alloc> bool std::operator==(const std::basic_string<_CharT, _Traits, _Alloc>&, const std::basic_string<_CharT, _Traits, _Alloc>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/basic_string.h:2483:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::basic_string<_CharT, _Traits, _Alloc>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/string:54:0,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/locale_classes.h:42,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/ios_base.h:43,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/ios:43,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/ostream:40,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/iterator:64,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:26,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/basic_string.h:2490:5: note: template<class _CharT> typename __gnu_cxx::__enable_if<std::__is_char<_Tp>::__value, bool>::__type std::operator==(const std::basic_string<_CharT>&, const std::basic_string<_CharT>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/basic_string.h:2490:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::basic_string<_CharT>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/string:54:0,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/locale_classes.h:42,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/ios_base.h:43,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/ios:43,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/ostream:40,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/iterator:64,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:26,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/basic_string.h:2504:5: note: template<class _CharT, class _Traits, class _Alloc> bool std::operator==(const _CharT*, const std::basic_string<_CharT, _Traits, _Alloc>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/basic_string.h:2504:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   mismatched types ‘const _CharT*’ and ‘std::pair<const unsigned int, std::vector<unsigned int>*>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/string:54:0,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/locale_classes.h:42,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/ios_base.h:43,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/ios:43,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/ostream:40,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/iterator:64,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:26,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/basic_string.h:2516:5: note: template<class _CharT, class _Traits, class _Alloc> bool std::operator==(const std::basic_string<_CharT, _Traits, _Alloc>&, const _CharT*)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/basic_string.h:2516:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::basic_string<_CharT, _Traits, _Alloc>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/locale_facets.h:50:0,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/basic_ios.h:39,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/ios:45,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/ostream:40,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/iterator:64,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:26,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/streambuf_iterator.h:206:5: note: template<class _CharT, class _Traits> bool std::operator==(const std::istreambuf_iterator<_CharT, _Traits>&, const std::istreambuf_iterator<_CharT, _Traits>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/streambuf_iterator.h:206:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::istreambuf_iterator<_CharT, _Traits>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/iterator:66:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:26,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stream_iterator.h:130:5: note: template<class _Tp, class _CharT, class _Traits, class _Dist> bool std::operator==(const std::istream_iterator<_Tp, _CharT, _Traits, _Dist>&, const std::istream_iterator<_Tp, _CharT, _Traits, _Dist>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stream_iterator.h:130:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::istream_iterator<_Tp, _CharT, _Traits, _Dist>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/vector:65:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:15,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_vector.h:1370:5: note: template<class _Tp, class _Alloc> bool std::operator==(const std::vector<_Tp, _Alloc>&, const std::vector<_Tp, _Alloc>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_vector.h:1370:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::vector<_Tp, _Alloc>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/set:61:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/DepthFirstIterator.h:39,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/Analysis/Dominators.h:19,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/Analysis/LoopInfo.h:37,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineLoopInfo.h:33,
+                 from RDfact.h:8,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_set.h:704:5: note: template<class _Key, class _Compare, class _Alloc> bool std::operator==(const std::set<_Key, _Compare, _Alloc>&, const std::set<_Key, _Compare, _Alloc>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_set.h:704:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::set<_Key, _Compare, _Alloc>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/set:62:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/DepthFirstIterator.h:39,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/Analysis/Dominators.h:19,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/Analysis/LoopInfo.h:37,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineLoopInfo.h:33,
+                 from RDfact.h:8,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_multiset.h:685:5: note: template<class _Key, class _Compare, class _Alloc> bool std::operator==(const std::multiset<_Key, _Compare, _Alloc>&, const std::multiset<_Key, _Compare, _Alloc>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_multiset.h:685:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::multiset<_Key, _Compare, _Alloc>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/deque:65:0,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/stack:61,
+                 from Gcra.cpp:18:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_deque.h:248:5: note: template<class _Tp, class _Ref, class _Ptr> bool std::operator==(const std::_Deque_iterator<_Tp, _Ref, _Ptr>&, const std::_Deque_iterator<_Tp, _Ref, _Ptr>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_deque.h:248:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::_Deque_iterator<_Tp, _Ref, _Ptr>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/deque:65:0,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/stack:61,
+                 from Gcra.cpp:18:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_deque.h:255:5: note: template<class _Tp, class _RefL, class _PtrL, class _RefR, class _PtrR> bool std::operator==(const std::_Deque_iterator<_Tp, _Ref, _Ptr>&, const std::_Deque_iterator<_Tp, _RefR, _PtrR>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_deque.h:255:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::_Deque_iterator<_Tp, _Ref, _Ptr>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/deque:65:0,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/stack:61,
+                 from Gcra.cpp:18:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_deque.h:1929:5: note: template<class _Tp, class _Alloc> bool std::operator==(const std::deque<_Tp, _Alloc>&, const std::deque<_Tp, _Alloc>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_deque.h:1929:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::deque<_Tp, _Alloc>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/stack:62:0,
+                 from Gcra.cpp:18:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_stack.h:242:5: note: template<class _Tp, class _Seq> bool std::operator==(const std::stack<_Tp, _Seq>&, const std::stack<_Tp, _Seq>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_stack.h:242:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::stack<_Tp, _Seq>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/queue:65:0,
+                 from Gcra.cpp:19:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_queue.h:267:5: note: template<class _Tp, class _Seq> bool std::operator==(const std::queue<_Tp, _Seq>&, const std::queue<_Tp, _Seq>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_queue.h:267:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const std::queue<_Tp, _Seq>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/x86_64-unknown-linux-gnu/bits/c++allocator.h:34:0,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/allocator.h:48,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_tree.h:64,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/map:60,
+                 from Gcra.cpp:16:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/ext/new_allocator.h:129:5: note: template<class _Tp> bool __gnu_cxx::operator==(const __gnu_cxx::new_allocator<_Tp>&, const __gnu_cxx::new_allocator<_Tp>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/ext/new_allocator.h:129:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const __gnu_cxx::new_allocator<_Tp>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algobase.h:68:0,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_tree.h:63,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/map:60,
+                 from Gcra.cpp:16:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_iterator.h:813:5: note: template<class _Iterator, class _Container> bool __gnu_cxx::operator==(const __gnu_cxx::__normal_iterator<_Iterator, _Container>&, const __gnu_cxx::__normal_iterator<_Iterator, _Container>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_iterator.h:813:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const __gnu_cxx::__normal_iterator<_Iterator, _Container>’
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algobase.h:68:0,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_tree.h:63,
+                 from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/map:60,
+                 from Gcra.cpp:16:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_iterator.h:807:5: note: template<class _IteratorL, class _IteratorR, class _Container> bool __gnu_cxx::operator==(const __gnu_cxx::__normal_iterator<_IteratorL, _Container>&, const __gnu_cxx::__normal_iterator<_IteratorR, _Container>&)
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_iterator.h:807:5: note:   template argument deduction/substitution failed:
+In file included from /afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/algorithm:63:0,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/SmallVector.h:21,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/ADT/ArrayRef.h:14,
+                 from /afs/cs.wisc.edu/unsup/llvm-3.3/@sys/include/llvm/CodeGen/MachineInstr.h:19,
+                 from RDfact.h:7,
+                 from Gcra.cpp:17:
+/afs/cs.wisc.edu/s/gcc-4.7.3/amd64_rhel6/bin/../lib/gcc/x86_64-unknown-linux-gnu/4.7.3/../../../../include/c++/4.7.3/bits/stl_algo.h:135:7: note:   ‘std::pair<const unsigned int, std::vector<unsigned int>*>’ is not derived from ‘const __gnu_cxx::__normal_iterator<_IteratorL, _Container>’
+make[1]: *** [Gcra.o] Error 1
+make: *** [plugin] Error 2

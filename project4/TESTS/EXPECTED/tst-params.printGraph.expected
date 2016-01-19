@@ -1,0 +1,72 @@
+clang -emit-llvm -O0 -c tst-params.c -o tst-params.bc
+opt -mem2reg tst-params.bc > tst-params.mem2reg
+mv tst-params.mem2reg tst-params.bc
+llc -optimize-regalloc=0 -load Debug/lib/P4.so -regalloc=gc tst-params.bc
+
+INTERFERENCE GRAPH FOR FUNCTION f
+
+Physical Registers
+R2's neighbors: { R43 %17 }
+R43's neighbors: { R2 }
+R46's neighbors: { %3 %4 %5 }
+R46's neighbors: { %2 %3 %4 %17 }
+R47's neighbors: { %0 %1 %2 %3 %4 %5 }
+R48's neighbors: { %2 %3 %4 %5 }
+R48's neighbors: { %1 %2 %3 %4 %17 }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R53's neighbors: { %1 %2 %3 %4 %5 }
+R53's neighbors: { %0 %1 %2 %3 %4 %17 }
+R76's neighbors: { %4 %5 }
+R76's neighbors: { %3 %4 %17 }
+R80's neighbors: { %5 }
+R80's neighbors: { %4 %17 }
+R110's neighbors: { %0 %1 %2 %3 %4 %16 %17 }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { R47 R53 R110 %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 }
+%1's neighbors: { R47 R48 R53 R53 R110 %0 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 }
+%2's neighbors: { R46 R47 R48 R48 R53 R53 R110 %0 %1 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 }
+%3's neighbors: { R46 R46 R47 R48 R48 R53 R53 R76 R110 %0 %1 %2 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 }
+%4's neighbors: { R46 R46 R47 R48 R48 R53 R53 R76 R76 R80 R110 %0 %1 %2 %3 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 %16 %17 }
+%5's neighbors: { R46 R47 R48 R53 R76 R80 %0 %1 %2 %3 %4 %6 %7 %8 %9 %10 %11 %12 %13 %14 %15 }
+%6's neighbors: { %0 %1 %2 %3 %4 %5 %7 %8 %9 %10 %11 %12 %13 %14 %15 }
+%7's neighbors: { %0 %1 %2 %3 %4 %5 %6 %8 %9 %10 %11 %12 %13 %14 %15 }
+%8's neighbors: { %0 %1 %2 %3 %4 %5 %6 %7 %9 %10 %11 %12 %13 %14 %15 }
+%9's neighbors: { %0 %1 %2 %3 %4 %5 %6 %7 %8 %10 %11 %12 %13 %14 %15 }
+%10's neighbors: { %0 %1 %2 %3 %4 %5 %6 %7 %8 %9 %11 %12 %13 %14 %15 }
+%11's neighbors: { %0 %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %12 %13 %14 %15 }
+%12's neighbors: { %0 %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %13 %14 %15 }
+%13's neighbors: { %0 %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %14 %15 }
+%14's neighbors: { %0 %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %15 }
+%15's neighbors: { %0 %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %14 }
+%16's neighbors: { R110 %0 %1 %2 %3 %4 %17 }
+%17's neighbors: { R2 R46 R48 R53 R76 R80 R110 %0 %1 %2 %3 %4 %16 }
+
+INTERFERENCE GRAPH FOR FUNCTION main
+
+Physical Registers
+R43's neighbors: { %7 }
+R46's neighbors: { %4 %5 %6 }
+R47's neighbors: { %1 %2 %3 %4 %5 %6 }
+R48's neighbors: { %3 %4 %5 %6 }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R53's neighbors: { %2 %3 %4 %5 %6 }
+R76's neighbors: { %5 %6 }
+R80's neighbors: { %6 }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { }
+%1's neighbors: { R47 %2 %3 %4 %5 %6 }
+%2's neighbors: { R47 R53 %1 %3 %4 %5 %6 }
+%3's neighbors: { R47 R48 R53 %1 %2 %4 %5 %6 }
+%4's neighbors: { R46 R47 R48 R53 %1 %2 %3 %5 %6 }
+%5's neighbors: { R46 R47 R48 R53 R76 %1 %2 %3 %4 %6 }
+%6's neighbors: { R46 R47 R48 R53 R76 R80 %1 %2 %3 %4 %5 }
+%7's neighbors: { R43 }
+gcc -lm tst-params.s -o tst-params.exe

@@ -1,0 +1,38 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2012.10.30.21.33.39;	author horwitz;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@DEBUG = ../../Debug/lib
+OBJS = Gcra.o RDfact.o
+
+$(DEBUG)/P4.so: $(OBJS)
+	mkdir -p $(DEBUG)
+	g++ $(OBJS) -shared -o $@@ -fPIC
+
+Gcra.o: Gcra.cpp RDfact.h 
+	g++ -c `llvm-config --cppflags` -g -fPIC $< -o Gcra.o
+
+RDfact.o: RDfact.cpp RDfact.h
+	g++ -c `llvm-config --cppflags` -g -fPIC $< -o RDfact.o
+
+clean:
+	rm -f $(DEBUG)/P4.so $(OBJS)
+@

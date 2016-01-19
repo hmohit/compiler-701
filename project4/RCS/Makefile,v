@@ -1,0 +1,42 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2012.10.30.21.33.27;	author horwitz;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@# The default target builds the plugin
+plugin:
+	make -C lib/p4
+
+.PRECIOUS: %.bc
+.PRECIOUS: %.exe
+
+%.bc:	%.c
+	clang -emit-llvm -O0 -c $*.c -o $*.bc
+	opt -mem2reg $*.bc > $*.ssa
+	mv $*.ssa $*.bc
+
+%.reg: %.bc
+	llc -load Debug/lib/P4.so -regalloc=gc $*.bc
+#	gcc $*.s -o $*.exe
+
+clean:
+	make -C lib/p4 clean
+	rm -rf *.bc *.ll *.s *.exe *~
+@

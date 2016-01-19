@@ -1,0 +1,8 @@
+The test files schedule, space, tcas, and replace all need input
+when they execute.  Here's how to run them (assuming that the
+executable is called a.out in each case):
+
+a.out 1 2 3 4 < schedule.input
+a.out space.input
+a.out 600 1 1 10 500 0 0 0 0 0 1 0
+a.out XXX YYY < replace.input

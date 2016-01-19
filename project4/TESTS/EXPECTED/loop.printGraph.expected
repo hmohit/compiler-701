@@ -1,0 +1,163 @@
+clang -emit-llvm -O0 -c loop.c -o loop.bc
+opt -mem2reg loop.bc > loop.mem2reg
+mv loop.mem2reg loop.bc
+llc -optimize-regalloc=0 -load Debug/lib/P4.so -regalloc=gc loop.bc
+
+INTERFERENCE GRAPH FOR FUNCTION print_array
+
+Physical Registers
+R2's neighbors: { R43 %1 %3 %10 %11 }
+R2's neighbors: { R43 %7 }
+R43's neighbors: { R2 %1 %3 %10 %11 }
+R43's neighbors: { R2 }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R53's neighbors: { %4 }
+R53's neighbors: { %1 %3 %9 %10 %11 }
+R110's neighbors: { %3 %4 }
+R110's neighbors: { %1 %3 %9 %10 %11 }
+R110's neighbors: { %6 %7 }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { %3 %4 %10 %11 %13 }
+%1's neighbors: { R2 R43 R53 R110 %2 %3 %5 %9 %10 %11 %13 }
+%2's neighbors: { %1 %3 %10 %11 %13 }
+%3's neighbors: { R2 R43 R53 R110 R110 %0 %1 %2 %4 %5 %9 %10 %11 %13 }
+%4's neighbors: { R53 R110 %0 %3 }
+%5's neighbors: { %1 %3 %10 %11 }
+%6's neighbors: { R110 %7 }
+%7's neighbors: { R2 R110 %6 }
+%9's neighbors: { R53 R110 %1 %3 %10 %11 }
+%10's neighbors: { R2 R43 R53 R110 %0 %1 %2 %3 %5 %9 %11 %13 }
+%11's neighbors: { R2 R43 R53 R110 %0 %1 %2 %3 %5 %9 %10 %13 }
+%13's neighbors: { %0 %1 %2 %3 %10 %11 }
+
+INTERFERENCE GRAPH FOR FUNCTION add_array
+
+Physical Registers
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R110's neighbors: { %2 }
+R112's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { %1 %2 %5 %7 %8 }
+%1's neighbors: { %0 %2 %8 }
+%2's neighbors: { R110 %0 %1 %4 %5 %7 %8 }
+%4's neighbors: { %2 %8 }
+%5's neighbors: { %0 %2 }
+%7's neighbors: { %0 %2 }
+%8's neighbors: { %0 %1 %2 %4 }
+
+INTERFERENCE GRAPH FOR FUNCTION sum_array
+
+Physical Registers
+R43's neighbors: { %1 }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R53's neighbors: { %5 }
+R110's neighbors: { %4 %5 }
+
+Virtual Registers
+%0's neighbors: { %1 %2 %4 %5 %8 %10 %11 %12 %13 }
+%1's neighbors: { R43 %0 %2 %4 %5 %8 %12 %13 }
+%2's neighbors: { %0 %1 %4 %5 %10 %11 %12 %13 }
+%4's neighbors: { R110 %0 %1 %2 %5 %6 %7 %8 %10 %11 %12 %13 }
+%5's neighbors: { R53 R110 %0 %1 %2 %4 %6 %7 %8 %10 %11 %12 %13 }
+%6's neighbors: { %4 %5 %7 %11 }
+%7's neighbors: { %4 %5 %6 %11 %12 }
+%8's neighbors: { %0 %1 %4 %5 }
+%10's neighbors: { %0 %2 %4 %5 %11 }
+%11's neighbors: { %0 %2 %4 %5 %6 %7 %10 %12 }
+%12's neighbors: { %0 %1 %2 %4 %5 %7 %11 }
+%13's neighbors: { %0 %1 %2 %4 %5 }
+
+INTERFERENCE GRAPH FOR FUNCTION main
+
+Physical Registers
+R2's neighbors: { R43 %0 %5 %31 %32 }
+R2's neighbors: { R43 %27 }
+R43's neighbors: { %12 }
+R43's neighbors: { R2 %0 %5 %31 %32 }
+R43's neighbors: { R2 }
+R43's neighbors: { %7 }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R53's neighbors: { %12 %13 }
+R53's neighbors: { %0 %18 }
+R53's neighbors: { %0 %22 }
+R53's neighbors: { %0 %5 %30 %31 %32 }
+R106's neighbors: { %12 }
+R110's neighbors: { %10 %11 }
+R110's neighbors: { %12 %13 }
+R110's neighbors: { %0 %18 }
+R110's neighbors: { %0 %22 }
+R110's neighbors: { %0 %5 %30 %31 %32 }
+R110's neighbors: { %26 %27 }
+R112's neighbors: { }
+R114's neighbors: { %11 }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { R2 R43 R53 R53 R53 R110 R110 R110 %1 %2 %3 %4 %5 %6 %9 %12 %15 %17 %18 %19 %21 %22 %23 %24 %30 %31 %32 %34 %35 %36 %37 }
+%1's neighbors: { %0 %2 %15 %35 }
+%2's neighbors: { %0 %1 %35 }
+%3's neighbors: { %0 %4 %19 %34 %36 }
+%4's neighbors: { %0 %3 %36 }
+%5's neighbors: { R2 R43 R53 R110 %0 %6 %23 %24 %30 %31 %32 %37 }
+%6's neighbors: { %0 %5 %31 %32 %37 }
+%7's neighbors: { R43 %8 %38 }
+%8's neighbors: { %7 %38 }
+%9's neighbors: { %0 %12 %35 }
+%10's neighbors: { R110 %11 }
+%11's neighbors: { R110 R114 %10 }
+%12's neighbors: { R43 R53 R106 R110 %0 %9 %13 }
+%13's neighbors: { R53 R110 %12 }
+%15's neighbors: { %0 %1 }
+%17's neighbors: { %0 %36 }
+%18's neighbors: { R53 R110 %0 }
+%19's neighbors: { %0 %3 }
+%21's neighbors: { %0 %31 %32 %37 }
+%22's neighbors: { R53 R110 %0 }
+%23's neighbors: { %0 %5 %24 %31 %32 }
+%24's neighbors: { %0 %5 %23 %31 %32 }
+%25's neighbors: { %38 }
+%26's neighbors: { R110 %27 }
+%27's neighbors: { R2 R110 %26 }
+%30's neighbors: { R53 R110 %0 %5 %31 %32 }
+%31's neighbors: { R2 R43 R53 R110 %0 %5 %6 %21 %23 %24 %30 %32 %37 }
+%32's neighbors: { R2 R43 R53 R110 %0 %5 %6 %21 %23 %24 %30 %31 %37 }
+%34's neighbors: { %0 %3 }
+%35's neighbors: { %0 %1 %2 %9 }
+%36's neighbors: { %0 %3 %4 %17 }
+%37's neighbors: { %0 %5 %6 %21 %31 %32 }
+%38's neighbors: { %7 %8 %25 }
+gcc -lm loop.s -o loop.exe

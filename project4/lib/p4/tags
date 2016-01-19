@@ -1,0 +1,85 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+BBtoRDfactMap	Gcra.cpp	/^typedef map<const MachineBasicBlock *, set<RDfact *>*> BBtoRDfactMap;$/;"	t	file:
+BBtoRegMap	Gcra.cpp	/^typedef map<const MachineBasicBlock *, set<unsigned>*> BBtoRegMap;$/;"	t	file:
+DEBUG	Gcra.cpp	/^    static const bool DEBUG = true;$/;"	m	class:__anon1::Gcra	file:
+DEBUG	Makefile	/^DEBUG = ..\/..\/Debug\/lib$/;"	m
+DEBUG_AVAIL	Gcra.cpp	/^    static const bool DEBUG_AVAIL = true;$/;"	m	class:__anon1::Gcra	file:
+DEBUG_TYPE	Gcra.cpp	14;"	d	file:
+Gcra	Gcra.cpp	/^    Gcra() : MachineFunctionPass(ID) {$/;"	f	class:__anon1::Gcra
+Gcra	Gcra.cpp	/^  class Gcra : public MachineFunctionPass {$/;"	c	namespace:__anon1	file:
+ID	Gcra.cpp	/^    static char ID; \/\/ Pass identification, replacement for typeid$/;"	m	class:__anon1::Gcra	file:
+ID	Gcra.cpp	/^  char Gcra::ID = 0;$/;"	m	class:__anon1::Gcra	file:
+InstrToNumMap	Gcra.cpp	/^    map<MachineInstr *, unsigned> InstrToNumMap;$/;"	m	class:__anon1::Gcra	file:
+InstrToRDfactMap	Gcra.cpp	/^typedef map<const MachineInstr *, set<RDfact *>*> InstrToRDfactMap;$/;"	t	file:
+InstrToRegMap	Gcra.cpp	/^typedef map<const MachineInstr *, set<unsigned>*> InstrToRegMap;$/;"	t	file:
+MRI	Gcra.cpp	/^    MachineRegisterInfo *MRI;$/;"	m	class:__anon1::Gcra	file:
+OBJS	Makefile	/^OBJS = Gcra.o RDfact.o$/;"	m
+PRINTLIVE	flags.h	1;"	d
+PRINTRD	flags.h	2;"	d
+PRINT_LIVE	Gcra.cpp	/^    static const bool PRINT_LIVE = false;$/;"	m	class:__anon1::Gcra	file:
+PRINT_LIVE	Gcra.cpp	/^    static const bool PRINT_LIVE = true;$/;"	m	class:__anon1::Gcra	file:
+PRINT_RD	Gcra.cpp	/^    static const bool PRINT_RD = false;$/;"	m	class:__anon1::Gcra	file:
+PRINT_RD	Gcra.cpp	/^    static const bool PRINT_RD = true;$/;"	m	class:__anon1::Gcra	file:
+RDafterMap	Gcra.cpp	/^    BBtoRDfactMap RDafterMap;$/;"	m	class:__anon1::Gcra	file:
+RDbeforeMap	Gcra.cpp	/^    BBtoRDfactMap RDbeforeMap;$/;"	m	class:__anon1::Gcra	file:
+RDfact	RDfact.cpp	/^RDfact::RDfact(unsigned reg, MachineInstr *inst) {$/;"	f	class:RDfact
+RDfact	RDfact.h	/^class RDfact {$/;"	c
+RDfactSet	Gcra.cpp	/^    set<RDfact *> RDfactSet;$/;"	m	class:__anon1::Gcra	file:
+RDgenMap	Gcra.cpp	/^    BBtoRDfactMap RDgenMap;$/;"	m	class:__anon1::Gcra	file:
+RDkillMap	Gcra.cpp	/^    BBtoRDfactMap RDkillMap;$/;"	m	class:__anon1::Gcra	file:
+RDsetSubtract	Gcra.cpp	/^    set<RDfact *> *RDsetSubtract(set<RDfact *> *S1, set<RDfact *> *S2) {$/;"	f	class:__anon1::Gcra	file:
+RDsetUnion	Gcra.cpp	/^    set<RDfact *> *RDsetUnion(set<RDfact *> *S1, set<RDfact *> *S2) {$/;"	f	class:__anon1::Gcra	file:
+addAliases	Gcra.cpp	/^    void addAliases(std::set<unsigned> *S, unsigned reg,$/;"	f	class:__anon1::Gcra	file:
+addArgPregsToRDfactSet	Gcra.cpp	/^    void addArgPregsToRDfactSet() {$/;"	f	class:__anon1::Gcra	file:
+analyzeBasicBlocksLiveVars	Gcra.cpp	/^    void analyzeBasicBlocksLiveVars(MachineFunction &Fn) {$/;"	f	class:__anon1::Gcra	file:
+analyzeBasicBlocksRDefs	Gcra.cpp	/^    void analyzeBasicBlocksRDefs(MachineFunction &Fn) {$/;"	f	class:__anon1::Gcra	file:
+analyzeInstructionsLiveVars	Gcra.cpp	/^    void analyzeInstructionsLiveVars(MachineFunction &Fn) {$/;"	f	class:__anon1::Gcra	file:
+analyzeInstructionsRDefs	Gcra.cpp	/^    void analyzeInstructionsRDefs(MachineFunction &Fn) {$/;"	f	class:__anon1::Gcra	file:
+argPregSet	Gcra.cpp	/^    std::set<unsigned> *argPregSet;  \/\/ set of regs used to pass in args$/;"	m	class:__anon1::Gcra	file:
+computeLiveAfter	Gcra.cpp	/^    set<unsigned> *computeLiveAfter(MachineBasicBlock *bb) {$/;"	f	class:__anon1::Gcra	file:
+computeLiveBefore	Gcra.cpp	/^    set<unsigned> *computeLiveBefore(MachineBasicBlock *bb) {$/;"	f	class:__anon1::Gcra	file:
+computeRDafter	Gcra.cpp	/^    set<RDfact *> *computeRDafter(MachineBasicBlock *bb) {$/;"	f	class:__anon1::Gcra	file:
+computeRDbefore	Gcra.cpp	/^    set<RDfact *> *computeRDbefore(MachineBasicBlock *bb) {$/;"	f	class:__anon1::Gcra	file:
+createGcra	Gcra.cpp	/^  FunctionPass *createGcra() { return new Gcra(); }$/;"	f	namespace:__anon1
+doInit	Gcra.cpp	/^    bool doInit(MachineFunction &Fn) {$/;"	f	class:__anon1::Gcra	file:
+doLiveAnalysis	Gcra.cpp	/^    void doLiveAnalysis(MachineFunction &Fn) {$/;"	f	class:__anon1::Gcra	file:
+doReachingDefsAnalysis	Gcra.cpp	/^    void doReachingDefsAnalysis(MachineFunction &Fn) {$/;"	f	class:__anon1::Gcra	file:
+firstBB	Gcra.cpp	/^    MachineBasicBlock *firstBB;      \/\/ first basic block in curr function$/;"	m	class:__anon1::Gcra	file:
+getAllDefs	Gcra.cpp	/^    set<unsigned> *getAllDefs(MachineBasicBlock *bb) {$/;"	f	class:__anon1::Gcra	file:
+getAnalysisUsage	Gcra.cpp	/^    virtual void getAnalysisUsage(AnalysisUsage &AU) const {$/;"	f	class:__anon1::Gcra
+getInstr	RDfact.cpp	/^MachineInstr *RDfact::getInstr() {$/;"	f	class:RDfact
+getNumRegClasses	Gcra.cpp	/^    void getNumRegClasses(MachineFunction &Fn) {$/;"	f	class:__anon1::Gcra	file:
+getOneInstrRegDefs	Gcra.cpp	/^    set<unsigned> *getOneInstrRegDefs(MachineInstr *instruct) {$/;"	f	class:__anon1::Gcra	file:
+getOneInstrRegUses	Gcra.cpp	/^    set<unsigned> *getOneInstrRegUses(MachineInstr *instruct) {$/;"	f	class:__anon1::Gcra	file:
+getRDgen	Gcra.cpp	/^    set<RDfact *> *getRDgen(MachineBasicBlock *bb) {$/;"	f	class:__anon1::Gcra	file:
+getRDkill	Gcra.cpp	/^    set<RDfact *> *getRDkill(MachineBasicBlock *bb) {$/;"	f	class:__anon1::Gcra	file:
+getReg	RDfact.cpp	/^unsigned RDfact::getReg() {$/;"	f	class:RDfact
+getUpwardsExposedUses	Gcra.cpp	/^    set<unsigned> *getUpwardsExposedUses(MachineBasicBlock *bb) {$/;"	f	class:__anon1::Gcra	file:
+insLiveAfterMap	Gcra.cpp	/^    InstrToRegMap insLiveAfterMap;$/;"	m	class:__anon1::Gcra	file:
+insLiveBeforeMap	Gcra.cpp	/^    InstrToRegMap insLiveBeforeMap;$/;"	m	class:__anon1::Gcra	file:
+insRDafterMap	Gcra.cpp	/^    InstrToRDfactMap insRDafterMap;$/;"	m	class:__anon1::Gcra	file:
+insRDbeforeMap	Gcra.cpp	/^    InstrToRDfactMap insRDbeforeMap;$/;"	m	class:__anon1::Gcra	file:
+liveAfterMap	Gcra.cpp	/^    BBtoRegMap liveAfterMap;$/;"	m	class:__anon1::Gcra	file:
+liveBeforeMap	Gcra.cpp	/^    BBtoRegMap liveBeforeMap;$/;"	m	class:__anon1::Gcra	file:
+liveForInstr	Gcra.cpp	/^    void liveForInstr(vector<MachineInstr *>instVector,$/;"	f	class:__anon1::Gcra	file:
+liveVarsGenMap	Gcra.cpp	/^    BBtoRegMap liveVarsGenMap;$/;"	m	class:__anon1::Gcra	file:
+liveVarsKillMap	Gcra.cpp	/^    BBtoRegMap liveVarsKillMap;$/;"	m	class:__anon1::Gcra	file:
+myInstr	RDfact.h	/^  MachineInstr *myInstr;$/;"	m	class:RDfact
+myReg	RDfact.h	/^  unsigned myReg;$/;"	m	class:RDfact
+numRegClasses	Gcra.cpp	/^    int numRegClasses;$/;"	m	class:__anon1::Gcra	file:
+printInstructions	Gcra.cpp	/^    void printInstructions(MachineFunction &F) {$/;"	f	class:__anon1::Gcra	file:
+printLiveResults	Gcra.cpp	/^    void printLiveResults(MachineFunction &F) {$/;"	f	class:__anon1::Gcra	file:
+printRDResults	Gcra.cpp	/^    void printRDResults(MachineFunction &F) {$/;"	f	class:__anon1::Gcra	file:
+printRDSet	Gcra.cpp	/^    void printRDSet(set<RDfact *> *S) {$/;"	f	class:__anon1::Gcra	file:
+printReg	Gcra.cpp	/^    void printReg(unsigned reg) {$/;"	f	class:__anon1::Gcra	file:
+printRegSet	Gcra.cpp	/^    void printRegSet(set<unsigned> *S) {$/;"	f	class:__anon1::Gcra	file:
+printRegSet	Gcra.cpp	/^    void printRegSet(set<unsigned> S) {$/;"	f	class:__anon1::Gcra	file:
+regClassToAvailPregSetMap	Gcra.cpp	/^    map<int, std::set<unsigned>*> regClassToAvailPregSetMap;$/;"	m	class:__anon1::Gcra	file:
+regSetSubtract	Gcra.cpp	/^    set<unsigned> *regSetSubtract(set<unsigned> *S1, set<unsigned> *S2) {$/;"	f	class:__anon1::Gcra	file:
+regSetUnion	Gcra.cpp	/^    set<unsigned> *regSetUnion(set<unsigned> *S1, set<unsigned> *S2) {$/;"	f	class:__anon1::Gcra	file:
+runOnMachineFunction	Gcra.cpp	/^    bool runOnMachineFunction(MachineFunction &Fn) {$/;"	f	class:__anon1::Gcra

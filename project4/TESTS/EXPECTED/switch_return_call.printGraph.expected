@@ -1,0 +1,89 @@
+clang -emit-llvm -O0 -c switch_return_call.c -o switch_return_call.bc
+opt -mem2reg switch_return_call.bc > switch_return_call.mem2reg
+mv switch_return_call.mem2reg switch_return_call.bc
+llc -optimize-regalloc=0 -load Debug/lib/P4.so -regalloc=gc switch_return_call.bc
+
+INTERFERENCE GRAPH FOR FUNCTION foo
+
+Physical Registers
+R43's neighbors: { %0 }
+R47's neighbors: { %0 }
+
+Virtual Registers
+%0's neighbors: { R43 R47 }
+
+INTERFERENCE GRAPH FOR FUNCTION main
+
+Physical Registers
+R2's neighbors: { R43 %5 %10 %11 %28 %29 %30 }
+R43's neighbors: { %0 %1 %2 %29 %30 }
+R43's neighbors: { %1 %2 %22 %29 %30 }
+R43's neighbors: { %5 %10 %11 %28 %29 %30 }
+R43's neighbors: { R2 %5 %10 %11 %28 %29 %30 }
+R43's neighbors: { %18 }
+R46's neighbors: { %5 %10 %11 %28 %29 %30 }
+R47's neighbors: { %0 %1 %2 %29 %30 }
+R47's neighbors: { %0 %1 %2 %29 %30 }
+R47's neighbors: { %5 %9 %10 %11 %29 %30 }
+R48's neighbors: { %5 %10 %11 %28 %29 %30 }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R53's neighbors: { %5 %10 %11 %28 %29 %30 }
+R76's neighbors: { %5 %10 %11 %28 %29 %30 }
+R110's neighbors: { %5 %10 %11 %28 %29 %30 }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { R43 R47 R47 %1 %2 %3 %23 %29 %30 %32 %33 %34 %35 %36 %37 %38 }
+%1's neighbors: { R43 R43 R47 R47 %0 %2 %3 %4 %21 %22 %23 %29 %30 %33 %34 %35 %36 %37 %38 }
+%2's neighbors: { R43 R43 R47 R47 %0 %1 %3 %4 %5 %6 %7 %8 %21 %22 %23 %25 %26 %27 %29 %30 %34 %35 %36 %37 %38 %39 %40 %41 }
+%3's neighbors: { %0 %1 %2 %29 %30 %35 %36 %37 %38 }
+%4's neighbors: { %1 %2 %21 %22 %29 %30 %36 }
+%5's neighbors: { R2 R43 R43 R46 R47 R48 R53 R76 R110 %2 %6 %7 %8 %9 %10 %11 %13 %25 %26 %27 %28 %29 %30 %36 %37 %38 %39 %40 %41 }
+%6's neighbors: { %2 %5 %7 %25 %26 %27 %29 %30 %37 %38 %39 %40 %41 }
+%7's neighbors: { %2 %5 %6 %8 %25 %26 %27 %29 %30 %38 %39 %40 %41 }
+%8's neighbors: { %2 %5 %7 %29 %30 %39 %40 }
+%9's neighbors: { R47 %5 %10 %11 %29 %30 %39 %40 %41 }
+%10's neighbors: { R2 R43 R43 R46 R47 R48 R53 R76 R110 %5 %9 %11 %12 %13 %28 %29 %30 %32 %33 %34 %40 %41 }
+%11's neighbors: { R2 R43 R43 R46 R47 R48 R53 R76 R110 %5 %9 %10 %12 %13 %28 %29 %30 %32 %33 %34 %35 %41 }
+%12's neighbors: { %10 %11 %13 %28 %29 %30 %32 %33 }
+%13's neighbors: { %5 %10 %11 %12 %28 %29 %30 %32 }
+%16's neighbors: { %29 %30 %32 %33 %34 %35 }
+%18's neighbors: { R43 }
+%21's neighbors: { %1 %2 %4 %22 %29 %30 %36 %37 %38 }
+%22's neighbors: { R43 %1 %2 %4 %21 %29 %30 }
+%23's neighbors: { %0 %1 %2 %29 %30 %36 %37 %38 }
+%25's neighbors: { %2 %5 %6 %7 %29 %30 %39 %40 %41 }
+%26's neighbors: { %2 %5 %6 %7 %29 %30 %39 %40 %41 }
+%27's neighbors: { %2 %5 %6 %7 %29 %30 %39 %40 }
+%28's neighbors: { R2 R43 R43 R46 R48 R53 R76 R110 %5 %10 %11 %12 %13 %29 %30 }
+%29's neighbors: { R2 R43 R43 R43 R43 R46 R47 R47 R47 R48 R53 R76 R110 %0 %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %16 %21 %22 %23 %25 %26 %27 %28 %30 %32 %33 %34 %35 %36 %37 %38 %39 %40 %41 }
+%30's neighbors: { R2 R43 R43 R43 R43 R46 R47 R47 R47 R48 R53 R76 R110 %0 %1 %2 %3 %4 %5 %6 %7 %8 %9 %10 %11 %12 %13 %16 %21 %22 %23 %25 %26 %27 %28 %29 %32 %33 %34 %35 %36 %37 %38 %39 %40 %41 }
+%32's neighbors: { %0 %10 %11 %12 %13 %16 %29 %30 %33 %34 %35 }
+%33's neighbors: { %0 %1 %10 %11 %12 %16 %29 %30 %32 %34 %35 }
+%34's neighbors: { %0 %1 %2 %10 %11 %16 %29 %30 %32 %33 %35 }
+%35's neighbors: { %0 %1 %2 %3 %11 %16 %29 %30 %32 %33 %34 }
+%36's neighbors: { %0 %1 %2 %3 %4 %5 %21 %23 %29 %30 %37 %38 }
+%37's neighbors: { %0 %1 %2 %3 %5 %6 %21 %23 %29 %30 %36 %38 }
+%38's neighbors: { %0 %1 %2 %3 %5 %6 %7 %21 %23 %29 %30 %36 %37 }
+%39's neighbors: { %2 %5 %6 %7 %8 %9 %25 %26 %27 %29 %30 %40 %41 }
+%40's neighbors: { %2 %5 %6 %7 %8 %9 %10 %25 %26 %27 %29 %30 %39 %41 }
+%41's neighbors: { %2 %5 %6 %7 %9 %10 %11 %25 %26 %29 %30 %39 %40 }
+gcc -lm switch_return_call.s -o switch_return_call.exe

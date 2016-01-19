@@ -1,0 +1,592 @@
+clang -emit-llvm -O0 -c schedule.c -o schedule.bc
+schedule.c:184:25: warning: field '__cd' with variable sized type 'struct __gconv_info' not at the end of a struct or class is a GNU extension [-Wgnu]
+    struct __gconv_info __cd;
+                        ^
+schedule.c:457:17: warning: implicitly declaring library function 'malloc' with type 'void *(unsigned long)'
+    ele =(Ele *)malloc(sizeof(Ele));
+                ^
+schedule.c:457:17: note: please include the header <stdlib.h> or explicitly provide a declaration for 'malloc'
+schedule.c:521:5: warning: implicit declaration of function 'free' is invalid in C99 [-Wimplicit-function-declaration]
+    free(ptr);
+    ^
+schedule.c:663:1: warning: type specifier missing, defaults to 'int' [-Wimplicit-int]
+main(argc, argv)
+^~~~
+schedule.c:679:24: warning: implicit declaration of function 'atoi' is invalid in C99 [-Wimplicit-function-declaration]
+ init_prio_queue(prio, atoi(argv[prio]));
+                       ^
+5 warnings generated.
+opt -mem2reg schedule.bc > schedule.mem2reg
+mv schedule.mem2reg schedule.bc
+llc -optimize-regalloc=0 -load Debug/lib/P4.so -regalloc=gc schedule.bc
+
+INTERFERENCE GRAPH FOR FUNCTION new_ele
+
+Physical Registers
+R47's neighbors: { %0 }
+R49's neighbors: { }
+R49's neighbors: { }
+R106's neighbors: { %0 %2 }
+R106's neighbors: { %2 }
+R110's neighbors: { %0 %1 }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { R47 R106 R110 %1 %2 }
+%1's neighbors: { R110 %0 }
+%2's neighbors: { R106 R106 %0 }
+
+INTERFERENCE GRAPH FOR FUNCTION new_list
+
+Physical Registers
+R49's neighbors: { }
+R49's neighbors: { }
+R106's neighbors: { %1 }
+R106's neighbors: { %1 }
+R110's neighbors: { %0 }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { R110 }
+%1's neighbors: { R106 R106 }
+
+INTERFERENCE GRAPH FOR FUNCTION append_ele
+
+Physical Registers
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R106's neighbors: { %3 %4 }
+R106's neighbors: { %1 }
+R110's neighbors: { %2 %3 }
+R114's neighbors: { %3 }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { %3 %4 %7 }
+%1's neighbors: { R106 %3 %5 %6 %7 }
+%2's neighbors: { R110 %3 %7 }
+%3's neighbors: { R106 R110 R114 %0 %1 %2 %4 %5 %6 %7 }
+%4's neighbors: { R106 %0 %3 }
+%5's neighbors: { %1 %3 }
+%6's neighbors: { %1 %3 }
+%7's neighbors: { %0 %1 %2 %3 }
+
+INTERFERENCE GRAPH FOR FUNCTION find_nth
+
+Physical Registers
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R53's neighbors: { %9 }
+R106's neighbors: { %7 }
+R110's neighbors: { %8 %9 }
+
+Virtual Registers
+%0's neighbors: { %8 %9 %11 %14 }
+%1's neighbors: { %2 %3 %4 %5 %6 %9 %12 %14 %15 %16 %17 }
+%2's neighbors: { %1 %3 %4 %6 %9 %12 %15 %16 %17 }
+%3's neighbors: { %1 %2 %9 %16 }
+%4's neighbors: { %1 %2 %9 %16 }
+%5's neighbors: { %1 %6 %9 %14 }
+%6's neighbors: { %1 %2 %5 %9 %14 %15 }
+%7's neighbors: { R106 %17 }
+%8's neighbors: { R110 %0 %9 %10 %17 }
+%9's neighbors: { R53 R110 %0 %1 %2 %3 %4 %5 %6 %8 %10 %11 %12 %14 %15 %16 %17 }
+%10's neighbors: { %8 %9 %17 }
+%11's neighbors: { %0 %9 %14 %15 }
+%12's neighbors: { %1 %2 %9 %16 }
+%14's neighbors: { %0 %1 %5 %6 %9 %11 %15 }
+%15's neighbors: { %1 %2 %6 %9 %11 %14 }
+%16's neighbors: { %1 %2 %3 %4 %9 %12 }
+%17's neighbors: { %1 %2 %7 %8 %9 %10 }
+
+INTERFERENCE GRAPH FOR FUNCTION del_ele
+
+Physical Registers
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R106's neighbors: { %0 }
+R110's neighbors: { %1 %2 }
+R114's neighbors: { %2 }
+
+Virtual Registers
+%0's neighbors: { R106 %11 }
+%1's neighbors: { R110 %2 %3 %5 %6 %7 %8 %9 %10 %11 }
+%2's neighbors: { R110 R114 %1 %3 %5 %6 %7 %8 %9 %10 %11 }
+%3's neighbors: { %1 %2 %11 }
+%5's neighbors: { %1 %2 }
+%6's neighbors: { %1 %2 %7 }
+%7's neighbors: { %1 %2 %6 }
+%8's neighbors: { %1 %2 }
+%9's neighbors: { %1 %2 %10 }
+%10's neighbors: { %1 %2 %9 }
+%11's neighbors: { %0 %1 %2 %3 }
+
+INTERFERENCE GRAPH FOR FUNCTION free_ele
+
+Physical Registers
+R2's neighbors: { R43 %1 }
+R43's neighbors: { R2 }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R110's neighbors: { %0 }
+R110's neighbors: { %0 %1 }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { R110 R110 %1 }
+%1's neighbors: { R2 R110 %0 }
+
+INTERFERENCE GRAPH FOR FUNCTION finish_process
+
+Physical Registers
+R2's neighbors: { R43 %4 }
+R43's neighbors: { R2 }
+R48's neighbors: { %1 %4 }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R110's neighbors: { %1 %2 %3 %4 }
+R110's neighbors: { %6 }
+R112's neighbors: { }
+R114's neighbors: { %1 %3 %4 }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { %1 }
+%1's neighbors: { R48 R110 R114 %0 %2 %3 %4 }
+%2's neighbors: { R110 %1 %3 %4 }
+%3's neighbors: { R110 R114 %1 %2 %4 }
+%4's neighbors: { R2 R48 R110 R114 %1 %2 %3 }
+%6's neighbors: { R110 }
+
+INTERFERENCE GRAPH FOR FUNCTION finish_all_processes
+
+Physical Registers
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R112's neighbors: { }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { %1 %2 %3 %5 }
+%1's neighbors: { %0 %2 %5 }
+%2's neighbors: { %0 %1 %5 }
+%3's neighbors: { %0 %5 }
+%5's neighbors: { %0 %1 %2 %3 }
+
+INTERFERENCE GRAPH FOR FUNCTION schedule
+
+Physical Registers
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R106's neighbors: { %0 %8 }
+R110's neighbors: { %0 %6 %7 }
+R112's neighbors: { }
+R114's neighbors: { %0 %6 }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { R106 R110 R114 %1 %3 %4 %5 %6 %7 %8 %9 }
+%1's neighbors: { %0 %9 }
+%2's neighbors: { %9 }
+%3's neighbors: { %0 }
+%4's neighbors: { %0 }
+%5's neighbors: { %0 %6 }
+%6's neighbors: { R110 R114 %0 %5 %7 }
+%7's neighbors: { R110 %0 %6 }
+%8's neighbors: { R106 %0 }
+%9's neighbors: { %0 %1 %2 }
+
+INTERFERENCE GRAPH FOR FUNCTION upgrade_process_prio
+
+Physical Registers
+R47's neighbors: { %5 }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R53's neighbors: { %1 %2 %5 %14 }
+R106's neighbors: { %1 %2 %5 %15 }
+R106's neighbors: { %2 %4 %5 }
+R106's neighbors: { }
+R110's neighbors: { %1 %2 %5 %14 }
+R110's neighbors: { %1 %2 %4 %5 }
+R110's neighbors: { %2 %4 }
+R112's neighbors: { }
+R114's neighbors: { %2 %4 %5 }
+R114's neighbors: { %4 }
+R115's neighbors: { }
+R129's neighbors: { %6 }
+
+Virtual Registers
+%0's neighbors: { %6 %11 %12 }
+%1's neighbors: { R53 R106 R110 R110 %2 %3 %4 %5 %8 %9 %10 %14 %15 }
+%2's neighbors: { R53 R106 R106 R110 R110 R110 R114 %1 %3 %4 %5 %9 %14 %15 %17 }
+%3's neighbors: { %1 %2 %5 %8 %9 }
+%4's neighbors: { R106 R110 R110 R114 R114 %1 %2 %5 %15 %17 }
+%5's neighbors: { R47 R53 R106 R106 R110 R110 R114 %1 %2 %3 %4 %8 %9 %10 %14 %15 %17 }
+%6's neighbors: { R129 %0 }
+%8's neighbors: { %1 %3 %5 %9 }
+%9's neighbors: { %1 %2 %3 %5 %8 }
+%10's neighbors: { %1 %5 }
+%11's neighbors: { %0 %12 }
+%12's neighbors: { %0 %11 %13 %19 }
+%13's neighbors: { %12 %19 }
+%14's neighbors: { R53 R110 %1 %2 %5 }
+%15's neighbors: { R106 %1 %2 %4 %5 }
+%17's neighbors: { %2 %4 %5 }
+%19's neighbors: { %12 %13 }
+
+INTERFERENCE GRAPH FOR FUNCTION unblock_process
+
+Physical Registers
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R53's neighbors: { %7 }
+R106's neighbors: { %8 }
+R106's neighbors: { %1 %10 }
+R106's neighbors: { %11 %13 }
+R110's neighbors: { %3 %7 }
+R110's neighbors: { %1 %9 }
+R110's neighbors: { %1 %11 %12 }
+R112's neighbors: { }
+R114's neighbors: { %1 }
+R114's neighbors: { %1 %11 }
+R115's neighbors: { }
+R129's neighbors: { %2 }
+
+Virtual Registers
+%0's neighbors: { %2 %4 %5 }
+%1's neighbors: { R106 R110 R110 R114 R114 %8 %9 %10 %11 %12 }
+%2's neighbors: { R129 %0 }
+%3's neighbors: { R110 %7 }
+%4's neighbors: { %0 %5 }
+%5's neighbors: { %0 %4 %6 %14 }
+%6's neighbors: { %5 %14 }
+%7's neighbors: { R53 R110 %3 }
+%8's neighbors: { R106 %1 }
+%9's neighbors: { R110 %1 }
+%10's neighbors: { R106 %1 }
+%11's neighbors: { R106 R110 R114 %1 %12 %13 }
+%12's neighbors: { R110 %1 %11 }
+%13's neighbors: { R106 %11 }
+%14's neighbors: { %5 %6 }
+
+INTERFERENCE GRAPH FOR FUNCTION quantum_expire
+
+Physical Registers
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R106's neighbors: { %1 %3 }
+R110's neighbors: { %0 %1 %2 }
+R112's neighbors: { }
+R114's neighbors: { %0 %1 }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { R110 R114 %1 %2 }
+%1's neighbors: { R106 R110 R114 %0 %2 %3 }
+%2's neighbors: { R110 %0 %1 }
+%3's neighbors: { R106 %1 }
+
+INTERFERENCE GRAPH FOR FUNCTION block_process
+
+Physical Registers
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R106's neighbors: { %2 }
+R110's neighbors: { %0 %1 }
+R112's neighbors: { }
+R114's neighbors: { %0 }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { R110 R114 %1 }
+%1's neighbors: { R110 %0 }
+%2's neighbors: { R106 }
+
+INTERFERENCE GRAPH FOR FUNCTION new_process
+
+Physical Registers
+R47's neighbors: { %0 }
+R47's neighbors: { %0 %1 }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R106's neighbors: { %0 %3 }
+R106's neighbors: { %3 }
+R112's neighbors: { }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { R47 R47 R106 %1 %2 %3 %4 }
+%1's neighbors: { R47 %0 %2 }
+%2's neighbors: { %0 %1 }
+%3's neighbors: { R106 R106 %0 %4 }
+%4's neighbors: { %0 %3 }
+
+INTERFERENCE GRAPH FOR FUNCTION add_process
+
+Physical Registers
+R47's neighbors: { %0 }
+R47's neighbors: { %0 }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R106's neighbors: { %0 %1 }
+R106's neighbors: { %2 %4 }
+R110's neighbors: { %1 %2 %3 }
+R114's neighbors: { %1 %2 }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { R47 R47 R106 %1 %2 }
+%1's neighbors: { R106 R110 R114 %0 %2 %3 }
+%2's neighbors: { R106 R110 R114 %0 %1 %3 %4 }
+%3's neighbors: { R110 %1 %2 }
+%4's neighbors: { R106 %2 }
+
+INTERFERENCE GRAPH FOR FUNCTION init_prio_queue
+
+Physical Registers
+R47's neighbors: { %5 %6 }
+R47's neighbors: { %2 %3 %5 %6 }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R53's neighbors: { %6 }
+R106's neighbors: { %5 %6 %8 }
+R106's neighbors: { %2 %3 %5 %6 %11 }
+R106's neighbors: { %3 %5 %6 %12 }
+R110's neighbors: { %2 %3 %5 %6 %11 }
+R114's neighbors: { %3 %5 %6 %11 }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { %5 %6 %7 %8 %13 %14 }
+%1's neighbors: { %2 %3 %5 %6 %13 %14 }
+%2's neighbors: { R47 R106 R110 %1 %3 %5 %6 %10 %11 %14 }
+%3's neighbors: { R47 R106 R106 R110 R114 %1 %2 %4 %5 %6 %11 %12 %13 }
+%4's neighbors: { %3 %5 %6 %12 %13 %14 }
+%5's neighbors: { R47 R47 R106 R106 R106 R110 R114 %0 %1 %2 %3 %4 %6 %7 %8 %10 %11 %12 %13 %14 }
+%6's neighbors: { R47 R47 R53 R106 R106 R106 R110 R114 %0 %1 %2 %3 %4 %5 %7 %8 %11 %12 %13 %14 }
+%7's neighbors: { %0 %5 %6 %8 %13 }
+%8's neighbors: { R106 %0 %5 %6 %7 }
+%10's neighbors: { %2 %5 }
+%11's neighbors: { R106 R110 R114 %2 %3 %5 %6 }
+%12's neighbors: { R106 %3 %4 %5 %6 }
+%13's neighbors: { %0 %1 %3 %4 %5 %6 %7 %14 }
+%14's neighbors: { %0 %1 %2 %4 %5 %6 %13 }
+
+INTERFERENCE GRAPH FOR FUNCTION main
+
+Physical Registers
+R2's neighbors: { R43 %73 }
+R2's neighbors: { R43 %7 %65 %67 }
+R2's neighbors: { R43 %10 %11 %12 }
+R2's neighbors: { R43 %10 %11 %12 %23 %40 %41 }
+R2's neighbors: { R43 %10 %11 %12 %23 %40 %41 }
+R2's neighbors: { R43 %10 %11 %12 %23 %40 %41 }
+R2's neighbors: { R43 %51 }
+R2's neighbors: { R43 %10 %11 %12 %23 %40 %41 }
+R2's neighbors: { R43 %32 }
+R2's neighbors: { R43 %10 %11 %12 %23 %40 %41 }
+R43's neighbors: { R2 }
+R43's neighbors: { R2 %7 %65 %67 %68 }
+R43's neighbors: { R2 %10 %11 %12 %13 }
+R43's neighbors: { R2 %10 %11 %12 %23 %40 %41 }
+R43's neighbors: { R2 %10 %11 %12 %23 %40 %41 }
+R43's neighbors: { R2 %10 %11 %12 %23 %40 %41 }
+R43's neighbors: { R2 }
+R43's neighbors: { R2 %10 %11 %12 %23 %40 %41 }
+R43's neighbors: { R2 }
+R43's neighbors: { R2 %10 %11 %12 %23 %40 %41 %64 }
+R43's neighbors: { %5 }
+R47's neighbors: { %6 %7 }
+R47's neighbors: { %7 %67 %68 %69 }
+R47's neighbors: { %10 %11 %12 %23 %40 %41 %45 }
+R47's neighbors: { %10 %11 %12 %23 %28 %40 %41 }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R53's neighbors: { %7 %67 %68 }
+R110's neighbors: { %71 %72 %73 }
+R110's neighbors: { %7 %65 %66 %67 }
+R110's neighbors: { %9 %10 %11 %12 }
+R110's neighbors: { %10 %11 %12 %23 %40 %41 %53 }
+R110's neighbors: { %10 %11 %12 %23 %34 %40 %41 }
+R110's neighbors: { %10 %11 %12 %23 %39 %40 %41 }
+R110's neighbors: { %49 %50 %51 }
+R110's neighbors: { %10 %11 %12 %21 %23 %40 %41 }
+R110's neighbors: { %30 %31 %32 }
+R110's neighbors: { %10 %11 %12 %23 %40 %41 %60 }
+R111's neighbors: { %10 %11 %12 }
+R111's neighbors: { %10 %11 %12 %23 %40 %41 }
+R111's neighbors: { %10 %11 %12 %23 %40 %41 }
+R111's neighbors: { %10 %11 %12 %23 %40 %41 }
+R111's neighbors: { %10 %11 %12 %23 %40 %41 }
+R111's neighbors: { %10 %11 %12 %23 %40 %41 }
+R112's neighbors: { }
+R114's neighbors: { %7 }
+R114's neighbors: { %72 %73 }
+R114's neighbors: { %10 %11 %12 }
+R114's neighbors: { %10 %11 %12 %23 %40 %41 }
+R114's neighbors: { %10 %11 %12 %23 %40 %41 }
+R114's neighbors: { %10 %11 %12 %23 %40 %41 }
+R114's neighbors: { %50 %51 }
+R114's neighbors: { %10 %11 %12 %23 %40 %41 }
+R114's neighbors: { %31 %32 }
+R114's neighbors: { %10 %11 %12 %23 %40 %41 }
+R115's neighbors: { }
+R129's neighbors: { %59 }
+R129's neighbors: { %47 }
+
+Virtual Registers
+%0's neighbors: { %10 %11 %12 %13 %23 %40 %41 %75 }
+%1's neighbors: { %10 %11 %12 %23 %40 %41 %75 %76 }
+%2's neighbors: { %10 %11 %12 %23 %40 %41 %76 }
+%3's neighbors: { %10 %11 %12 %16 %23 %40 %41 %76 }
+%4's neighbors: { %10 %11 %12 %23 %40 %41 %64 %75 }
+%5's neighbors: { R43 %77 }
+%6's neighbors: { R47 %7 }
+%7's neighbors: { R2 R43 R47 R47 R53 R110 R114 %6 %65 %66 %67 %68 %69 }
+%9's neighbors: { R110 %10 %11 %12 }
+%10's neighbors: { R2 R2 R2 R2 R2 R2 R43 R43 R43 R43 R43 R43 R47 R47 R110 R110 R110 R110 R110 R110 R111 R111 R111 R111 R111 R111 R114 R114 R114 R114 R114 R114 %0 %1 %2 %3 %4 %9 %11 %12 %13 %16 %17 %18 %19 %21 %23 %28 %34 %39 %40 %41 %45 %53 %60 %64 %75 %76 %77 }
+%11's neighbors: { R2 R2 R2 R2 R2 R2 R43 R43 R43 R43 R43 R43 R47 R47 R110 R110 R110 R110 R110 R110 R111 R111 R111 R111 R111 R111 R114 R114 R114 R114 R114 R114 %0 %1 %2 %3 %4 %9 %10 %12 %13 %16 %17 %18 %19 %21 %23 %28 %34 %39 %40 %41 %45 %53 %60 %64 %75 %76 %77 }
+%12's neighbors: { R2 R2 R2 R2 R2 R2 R43 R43 R43 R43 R43 R43 R47 R47 R110 R110 R110 R110 R110 R110 R111 R111 R111 R111 R111 R111 R114 R114 R114 R114 R114 R114 %0 %1 %2 %3 %4 %9 %10 %11 %13 %16 %17 %18 %19 %21 %23 %28 %34 %39 %40 %41 %45 %53 %60 %64 %75 %76 %77 }
+%13's neighbors: { R43 %0 %10 %11 %12 }
+%16's neighbors: { %3 %10 %11 %12 %23 %40 %41 %77 }
+%17's neighbors: { %10 %11 %12 %19 %23 %40 %41 }
+%18's neighbors: { %10 %11 %12 %19 %23 %40 %41 }
+%19's neighbors: { %10 %11 %12 %17 %18 %23 %40 %41 }
+%21's neighbors: { R110 %10 %11 %12 %23 %40 %41 }
+%23's neighbors: { R2 R2 R2 R2 R2 R43 R43 R43 R43 R43 R47 R47 R110 R110 R110 R110 R110 R111 R111 R111 R111 R111 R114 R114 R114 R114 R114 %0 %1 %2 %3 %4 %10 %11 %12 %16 %17 %18 %19 %21 %28 %34 %39 %40 %41 %45 %53 %60 %64 %75 %76 %77 }
+%28's neighbors: { R47 %10 %11 %12 %23 %40 %41 }
+%29's neighbors: { %77 }
+%30's neighbors: { R110 %31 %32 }
+%31's neighbors: { R110 R114 %30 %32 }
+%32's neighbors: { R2 R110 R114 %30 %31 }
+%34's neighbors: { R110 %10 %11 %12 %23 %40 %41 }
+%39's neighbors: { R110 %10 %11 %12 %23 %40 %41 }
+%40's neighbors: { R2 R2 R2 R2 R2 R43 R43 R43 R43 R43 R47 R47 R110 R110 R110 R110 R110 R111 R111 R111 R111 R111 R114 R114 R114 R114 R114 %0 %1 %2 %3 %4 %10 %11 %12 %16 %17 %18 %19 %21 %23 %28 %34 %39 %41 %45 %53 %60 %64 %75 %76 %77 }
+%41's neighbors: { R2 R2 R2 R2 R2 R43 R43 R43 R43 R43 R47 R47 R110 R110 R110 R110 R110 R111 R111 R111 R111 R111 R114 R114 R114 R114 R114 %0 %1 %2 %3 %4 %10 %11 %12 %16 %17 %18 %19 %21 %23 %28 %34 %39 %40 %45 %53 %60 %64 %75 %76 %77 }
+%45's neighbors: { R47 %10 %11 %12 %23 %40 %41 }
+%46's neighbors: { %47 }
+%47's neighbors: { R129 %46 }
+%48's neighbors: { %77 }
+%49's neighbors: { R110 %50 %51 }
+%50's neighbors: { R110 R114 %49 %51 }
+%51's neighbors: { R2 R110 R114 %49 %50 }
+%53's neighbors: { R110 %10 %11 %12 %23 %40 %41 }
+%58's neighbors: { %59 }
+%59's neighbors: { R129 %58 }
+%60's neighbors: { R110 %10 %11 %12 %23 %40 %41 }
+%64's neighbors: { R43 %4 %10 %11 %12 %23 %40 %41 }
+%65's neighbors: { R2 R43 R110 %7 %66 %67 %68 %69 }
+%66's neighbors: { R110 %7 %65 %67 }
+%67's neighbors: { R2 R43 R47 R53 R110 %7 %65 %66 %68 %69 }
+%68's neighbors: { R43 R47 R53 %7 %65 %67 %69 }
+%69's neighbors: { R47 %7 %65 %67 %68 }
+%70's neighbors: { %77 }
+%71's neighbors: { R110 %72 %73 }
+%72's neighbors: { R110 R114 %71 %73 }
+%73's neighbors: { R2 R110 R114 %71 %72 }
+%75's neighbors: { %0 %1 %4 %10 %11 %12 %23 %40 %41 }
+%76's neighbors: { %1 %2 %3 %10 %11 %12 %23 %40 %41 }
+%77's neighbors: { %5 %10 %11 %12 %16 %23 %29 %40 %41 %48 %70 }
+gcc -lm schedule.s -o schedule.exe

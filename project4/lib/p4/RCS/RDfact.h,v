@@ -1,0 +1,90 @@
+head	1.3;
+access;
+symbols;
+locks
+	horwitz:1.3; strict;
+comment	@ * @;
+
+
+1.3
+date	2012.10.31.20.18.13;	author horwitz;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2012.10.31.20.17.50;	author horwitz;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2010.11.04.20.41.21;	author horwitz;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@create back-uo version
+@
+text
+@//**********************************************************************
+// A RDfact is a pair (unsigned reg, MachineInstr * inst).
+// reg is the variable defined and inst is the instruction where it is
+// defined
+//**********************************************************************
+
+#include "llvm/CodeGen/Passes.h"
+#include "llvm/CodeGen/MachineFunctionPass.h"
+#include "llvm/CodeGen/MachineInstr.h"
+#include "llvm/CodeGen/MachineLoopInfo.h"
+#include "llvm/CodeGen/MachineFrameInfo.h"
+#include "llvm/CodeGen/MachineRegisterInfo.h"
+#include "llvm/CodeGen/RegAllocRegistry.h"
+//#include "llvm/CodeGen/VirtRegMap.h"
+//#include "llvm/Target/TargetInstrDesc.h"
+#include "llvm/Target/TargetInstrInfo.h"
+#include "llvm/Target/TargetMachine.h"
+#include "llvm/Support/Debug.h"
+#include "llvm/Support/Compiler.h"
+#include "llvm/ADT/Statistic.h"
+
+using namespace std;
+using namespace llvm;
+
+class RDfact {
+public:
+
+  // constructor
+  RDfact(unsigned reg, MachineInstr *inst);
+  unsigned getReg();
+  MachineInstr *getInstr();
+
+private:
+  unsigned myReg;
+  MachineInstr *myInstr;
+
+};
+@
+
+
+1.2
+log
+@before removing as much as possible
+@
+text
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d15 1
+a15 1
+#include "llvm/Target/TargetInstrDesc.h"
+@

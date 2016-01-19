@@ -1,0 +1,66 @@
+clang -emit-llvm -O0 -c tst-array.c -o tst-array.bc
+opt -mem2reg tst-array.bc > tst-array.mem2reg
+mv tst-array.mem2reg tst-array.bc
+llc -optimize-regalloc=0 -load Debug/lib/P4.so -regalloc=gc tst-array.bc
+
+INTERFERENCE GRAPH FOR FUNCTION main
+
+Physical Registers
+R2's neighbors: { R43 %0 %5 %25 %26 }
+R2's neighbors: { R43 %21 }
+R43's neighbors: { R2 %0 %5 %25 %26 }
+R43's neighbors: { R2 }
+R43's neighbors: { %23 }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R49's neighbors: { }
+R53's neighbors: { %0 %5 %24 %25 %26 }
+R106's neighbors: { %12 }
+R110's neighbors: { %10 %11 }
+R110's neighbors: { %0 %5 %24 %25 %26 }
+R110's neighbors: { %20 %21 }
+R112's neighbors: { }
+R114's neighbors: { %11 }
+R115's neighbors: { }
+
+Virtual Registers
+%0's neighbors: { R2 R43 R53 R110 %1 %2 %3 %4 %5 %6 %7 %12 %14 %16 %17 %19 %24 %25 %26 %28 %29 %30 %31 %32 }
+%1's neighbors: { %0 %2 %7 %14 %29 %30 }
+%2's neighbors: { %0 %1 %7 %30 }
+%3's neighbors: { %0 %4 %17 %28 %31 }
+%4's neighbors: { %0 %3 %31 }
+%5's neighbors: { R2 R43 R53 R110 %0 %6 %19 %24 %25 %26 %32 }
+%6's neighbors: { %0 %5 %25 %26 %32 }
+%7's neighbors: { %0 %1 %2 %12 %14 %29 %30 %31 }
+%8's neighbors: { }
+%9's neighbors: { }
+%10's neighbors: { R110 %11 }
+%11's neighbors: { R110 R114 %10 }
+%12's neighbors: { R106 %0 %7 }
+%14's neighbors: { %0 %1 %7 }
+%16's neighbors: { %0 %25 %26 %32 }
+%17's neighbors: { %0 %3 }
+%19's neighbors: { %0 %5 %25 %26 }
+%20's neighbors: { R110 %21 }
+%21's neighbors: { R2 R110 %20 }
+%23's neighbors: { R43 }
+%24's neighbors: { R53 R110 %0 %5 %25 %26 }
+%25's neighbors: { R2 R43 R53 R110 %0 %5 %6 %16 %19 %24 %26 %32 }
+%26's neighbors: { R2 R43 R53 R110 %0 %5 %6 %16 %19 %24 %25 %32 }
+%28's neighbors: { %0 %3 }
+%29's neighbors: { %0 %1 %7 }
+%30's neighbors: { %0 %1 %2 %7 }
+%31's neighbors: { %0 %3 %4 %7 }
+%32's neighbors: { %0 %5 %6 %16 %25 %26 }
+gcc -lm tst-array.s -o tst-array.exe

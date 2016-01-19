@@ -1,0 +1,11 @@
+This is input to test replace.
+See if all 3-X sequences are replaced by a 3-Y sequence.
+example: YYY here
+XX not enough Xs
+YYY at start of line
+at end of line: YYY
+wrapping? XX
+X
+What about 3-Ys: YYY
+No whitespace: aYYY YYYb aYYYb
+Other chars between: aXbXcXd

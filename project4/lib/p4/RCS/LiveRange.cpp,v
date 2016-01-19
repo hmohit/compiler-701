@@ -1,0 +1,143 @@
+head	1.1;
+access;
+symbols;
+locks
+	horwitz:1.1; strict;
+comment	@// @;
+
+
+1.1
+date	2010.11.04.20.41.21;	author horwitz;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@#include "LiveRange.h"
+
+//**********************************************************************
+// constructor
+//**********************************************************************
+LiveRange::LiveRange(unsigned reg, int regClass) {
+  myReg = reg;
+  myRegClass = regClass;
+  myColor = -1;
+  hasCall = false;
+}
+
+//**********************************************************************
+// addInstr
+//**********************************************************************
+void LiveRange::addInstr(MachineInstr *in) {
+  myRange.insert(in);
+  const TargetInstrDesc &TID = in->getDesc();
+  if (TID.isCall()) hasCall = true;
+}
+
+//**********************************************************************
+// print
+//**********************************************************************
+void LiveRange::print(map<MachineInstr *, unsigned> InstrToNumMap) {
+  cerr << myReg << ": {";
+  for (set<MachineInstr *>::iterator IT = myRange.begin();
+       IT != myRange.end(); IT++) {
+    MachineInstr *oneInst = *IT;
+    cerr << "%" << InstrToNumMap[oneInst] << " ";
+  }
+  cerr << "}\n";
+}
+
+//**********************************************************************
+// getReg
+//**********************************************************************
+unsigned LiveRange::getReg() {
+  return myReg;
+}
+
+//**********************************************************************
+// getInstrSet
+//**********************************************************************
+set<MachineInstr *> LiveRange::getInstrSet() {
+  return myRange;
+}
+
+//**********************************************************************
+// numNeighbors
+//**********************************************************************
+unsigned LiveRange::numNeighbors() {
+  return myNeighbors.size();
+}
+
+//**********************************************************************
+// addNeighbor
+//**********************************************************************
+void LiveRange::addNeighbor(LiveRange *n) {
+  myNeighbors.insert(n);
+}
+
+//**********************************************************************
+// getNeighbors
+//**********************************************************************
+set<LiveRange *> LiveRange::getNeighbors() {
+  return myNeighbors;
+}
+
+//**********************************************************************
+// numUnstackedNeighbors
+//
+// given: set of ptrs to live ranges that are stacked
+//
+// do: return the number of neighbors that are NOT in that set
+//**********************************************************************
+unsigned LiveRange::numUnstackedNeighbors(set<LiveRange *> S) {
+  unsigned num = 0;
+  for (set<LiveRange *>::iterator IT = myNeighbors.begin();
+       IT != myNeighbors.end(); IT++) {
+    LiveRange *oneLR = *IT;
+    if (S.find(oneLR) != S.end()) num++;
+  }
+  return num;
+}
+
+//**********************************************************************
+// setColor
+//**********************************************************************
+void LiveRange::setColor(int c) {
+  myColor = c;
+}
+
+//**********************************************************************
+// getColor
+//**********************************************************************
+int LiveRange::getColor() {
+  return myColor;
+}
+
+//**********************************************************************
+// makeCopy
+//**********************************************************************
+LiveRange *LiveRange::makeCopy() {
+  LiveRange *copy = new LiveRange(myReg, myRegClass);
+  for (set<MachineInstr *>::iterator IT = myRange.begin();
+       IT != myRange.end(); IT++) {
+    MachineInstr *in = *IT;
+    copy->addInstr(in);
+  }
+  return copy;
+}
+
+//**********************************************************************
+// containsCall
+//**********************************************************************
+bool LiveRange:: containsCall() {
+  return hasCall;
+}
+@
